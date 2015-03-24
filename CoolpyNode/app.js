@@ -599,37 +599,39 @@ router.route('/device/:dvid/sensors')
 	.post(isAuthenticated, isDvsInUkey, function (req, res) {
         var sensor = new SensorModel(req.body); 		
         sensor.dvid = req.params.dvid;
-        sensor.save(function (err, nss) {
-            if (err) {
-                if (!config.production) {
-                    res.send(err);
-                } else {
-                    res.status(404);
-                    res.end();
-                }
-            } else if (sensor.type === "switcher") {
-                var sw = new SwsdpModel();
-                sw.dvid = req.params.dvid;
-                sw.ssid = nss.id;
-                sw.value = 0;
-                sw.save();
-                res.json({ sensor_id: nss.id });
-            } else if (sensor.type === "gencontrol") {
-                var genc = new GencontrolModel();
-                genc.dvid = req.params.dvid;
-                genc.ssid = nss.id;
-                genc.value = 'null';
-                genc.save();
-                res.json({ sensor_id: nss.id });
-        } else if (sensor.type === "rangecontrol") {
-                var ranc = new RangecontrolModel();
-                ranc.dvid = req.params.dvid;
-                ranc.ssid = nss.id;
-                ranc.value = 0;
-                ranc.save();
-                res.json({ sensor_id: nss.id });
+    sensor.save(function (err, nss) {
+        if (err) {
+            if (!config.production) {
+                res.send(err);
+            } else {
+                res.status(404);
+                res.end();
             }
-        });
+        } else if (sensor.type === "switcher") {
+            var sw = new SwsdpModel();
+            sw.dvid = req.params.dvid;
+            sw.ssid = nss.id;
+            sw.value = 0;
+            sw.save();
+            res.json({ sensor_id: nss.id });
+        } else if (sensor.type === "gencontrol") {
+            var genc = new GencontrolModel();
+            genc.dvid = req.params.dvid;
+            genc.ssid = nss.id;
+            genc.value = 'null';
+            genc.save();
+            res.json({ sensor_id: nss.id });
+        } else if (sensor.type === "rangecontrol") {
+            var ranc = new RangecontrolModel();
+            ranc.dvid = req.params.dvid;
+            ranc.ssid = nss.id;
+            ranc.value = 0;
+            ranc.save();
+            res.json({ sensor_id: nss.id });
+        } else {
+            res.json({ sensor_id: nss.id });
+        }
+    });
     })
 
     	// get all the bears (accessed at GET)

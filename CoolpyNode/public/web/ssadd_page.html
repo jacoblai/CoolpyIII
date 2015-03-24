@@ -144,7 +144,7 @@
             if (self.selectedType().typePopulation === "rangecontrol") {
                 ss.range = { "min": self.min(), "max": self.max(), "step":self.step() }
             } else {
-                ss.range = { "min": 0, "max": 0, "step": 0 }
+                ss.range = { "min": 0, "max": 255, "step": 5 }
             }
             return JSON.stringify(ss);
         };
@@ -184,9 +184,9 @@
             self.tags("");
             self.name("");
             self.symbol("");
-            self.min("");
-            self.max("");
-            self.step("");
+            self.min(0);
+            self.max(255);
+            self.step(5);
             self.type(self.type()[0]);
         };
 
@@ -196,9 +196,9 @@
             self.tags("");
             self.name("");
             self.symbol("");
-            self.min("");
-            self.max("");
-            self.step("");
+            self.min(0);
+            self.max(255);
+            self.step(5);
         };
 
     };

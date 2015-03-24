@@ -141,10 +141,14 @@
                 ss.tags = self.tags().toString().split(",");
                 if (self.selectedType().typePopulation === "value") {
                     ss.unit = { "name": self.name(), "symbol": self.symbol() }
+                } else {
+                    ss.unit = { "name": "null", "symbol": "null" }
                 };
                 if (self.selectedType().typePopulation === "rangecontrol") {
                     ss.range = { "min": self.min(), "max": self.max(), "step": self.step() }
-                } 
+                } else {
+                    ss.range = { "min": 0, "max": 255, "step": 5 }
+                }
                 return JSON.stringify(ss);
             } else {
                 $("#msg").html("数据验证失败！");
