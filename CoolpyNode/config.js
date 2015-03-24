@@ -3,7 +3,7 @@
     mongo : 'tingodb://' + __dirname + '/data',//使用本地数据库
     cross : false,//是否接受跨域访问
     production : true,
-    v : '1.0.7',
+    v : '1.0.7.1',
     openLimit: false,//访问速速限制器开关/默认关闭,开启请设置为 true
     limitr: {//配置访问速度限制，默认是每秒1次请求
         limit: 1, //请求数量，接速率允许的请求数量
