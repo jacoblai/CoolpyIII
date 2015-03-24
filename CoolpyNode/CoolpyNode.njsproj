@@ -71,7 +71,6 @@
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.css" />
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.min.css" />
     <Content Include="public\stylesheets\style.styl" />
-    <Content Include="README.md" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\error.jade" />
