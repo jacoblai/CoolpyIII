@@ -1,0 +1,98 @@
+﻿<div class="am-input-group am-input-group-warning">
+    <span class="am-input-group-label"><i class="am-icon-search"></i></span>
+    <input type="text" id="filter" placeholder="查找" class="am-form-field">
+</div>
+<table class="footable table" data-page-size="15" data-filter="#filter" data-filter-minimum="1" data-filter-timeout="500" data-filter-text-only="true">
+    <thead>
+        <tr>
+            <th>用户名</th>
+            <th>密码</th>
+            <th data-hide="phone">姓名</th>
+            <th data-hide="phone,tablet">邮箱</th>
+            <th data-hide="phone,tablet">QQ</th>
+            <th data-hide="phone,tablet">Ukey</th>
+            <th data-hide="phone,tablet" data-sort-ignore="true"></th>
+        </tr>
+    </thead>
+    <tbody id="usmodel" data-bind="foreach: uss">
+        <tr>
+            <td data-bind="text: userId"></td>
+            <td data-bind="text: pwd"></td>
+            <td data-bind="text: userName"></td>
+            <td data-bind="text: email"></td>
+            <td data-bind="text: qq"></td>
+            <td data-bind="text: ukey"></td>
+            <td>
+                <a href="#" data-bind="click: $parent.delclick" class="am-btn am-btn-primary am-btn-sm">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    <tfoot class="hide-if-no-paging">
+        <tr>
+            <td colspan="7">
+                <div class="pagination pagination-centered"></div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<script type="text/javascript">
+    function sssvm() {
+        var self = this;
+        self.uss = ko.observable();
+        self.loaddata = function () {
+            $.ajax({
+                url: "/v1.0/user/all?username=" + $.AMUI.utils.cookie.get('uid') + "&pass=" + $.AMUI.utils.cookie.get('pwd')
+            }).done(function (data) {
+                self.uss(data);
+                $('.footable').footable().trigger('footable_initialize');
+            });
+        };
+
+        self.delclick = function (ss) {
+            $("#dialog-confirm").html("你确定想删除吗？");
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                modal: true,
+                title: "酷痞物联",
+                height: 250,
+                width: 250,
+                buttons: {
+                    "确定": function () {
+                        $(this).dialog('close');
+                        $.ajax({
+                            url: "/v1.0/user?username=" + $.AMUI.utils.cookie.get('uid')
+                                + "&pass=" + $.AMUI.utils.cookie.get('pwd') + "&duid=" + escape(ss.userId),
+                            type: "DELETE"
+                        }).done(function (data) {
+                            if (data === "") {
+                                self.loaddata();
+                            } else {
+                                $("#msg").html(data.Error);
+                                $('#my-prompt').modal('open');
+                            }
+                        }).fail(function (xhr) {
+                            $("#msg").html(xhr.responseText);
+                            $('#my-prompt').modal('open');
+                        });
+                    },
+                    "取消": function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        };
+    }
+    var ssvm = new sssvm();
+    setTimeout('ssvm.loaddata()', 100);
+    ko.applyBindings(ssvm, document.getElementById("usmodel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>

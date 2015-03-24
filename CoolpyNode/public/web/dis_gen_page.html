@@ -1,0 +1,59 @@
+﻿<div id="gensModel">
+    <div data-am-widget="list_news" class="am-list-news am-list-news-default">
+        <!--列表标题-->
+        <div class="am-list-news-hd am-cf">
+            <!--带更多链接-->
+            <a href="###">
+                <h2 data-bind="text: title"></h2>
+                <!--<span class="am-list-news-more am-fr">更多 &raquo;</span>-->
+            </a>
+        </div>
+        <div class="am-list-news-bd" data-bind="foreach: { data: dps }">
+            <ul class="am-list am-list-static am-list-border">
+                <!-- ko -->
+                <li class="am-g am-list-item-desced">
+                    <a href="###">
+                        <span class="am-icon-code"></span> |
+                        <span data-bind="text:key"></span>
+                        <span class="am-fr am-icon-chevron-right"></span>
+                    </a>
+                    <div class="am-list-item-text" data-bind="text: JSON.stringify(value)"></div>
+                </li>
+                <!-- /ko -->
+            </ul>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function centervm() {
+        var self = this;
+        self.title = ko.observable();
+        self.title('设备编号：' + $.AMUI.utils.cookie.get('dvid') + '，传感器编号：' + $.AMUI.utils.cookie.get('ssid'));
+        self.dps = ko.observable();
+
+        self.loaddata = function () {
+            $.ajax({
+                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid') + "/sensor/" + $.AMUI.utils.cookie.get('ssid') + "/json?page=1",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                self.dps(data);
+            });
+        };
+    };
+    var ctvm = new centervm();
+    //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒
+    setTimeout('ctvm.loaddata()', 100);
+    ko.applyBindings(ctvm, document.getElementById("gensModel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>

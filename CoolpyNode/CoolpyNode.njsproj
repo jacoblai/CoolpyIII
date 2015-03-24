@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>CoolpyNode</Name>
+    <RootNamespace>CoolpyNode</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>76911f53-e26e-4176-ae5c-0ef62ea9f52e</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>bin\www</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <NodejsPort>1337</NodejsPort>
+    <StartWebBrowser>true</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="app.js" />
+    <Compile Include="app\models\admin.js" />
+    <Compile Include="app\models\device.js" />
+    <Compile Include="app\models\gencontroldp.js" />
+    <Compile Include="app\models\gendp.js" />
+    <Compile Include="app\models\gpsdp.js" />
+    <Compile Include="app\models\rangecontroldp.js" />
+    <Compile Include="app\models\sensor.js" />
+    <Compile Include="app\models\swsdp.js" />
+    <Compile Include="app\models\valuedp.js" />
+    <Compile Include="bin\coolpy.js" />
+    <Compile Include="config.js" />
+    <Compile Include="public\assets\js\jquery-ui-1.11.2.custom\external\jquery\jquery.js" />
+    <Compile Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.js" />
+    <Compile Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.min.js" />
+    <Compile Include="routes\index.js" />
+    <Compile Include="routes\users.js" />
+    <Compile Include="bin\www" />
+    <Content Include="package.json" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-icons_222222_256x240.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\index.html" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.css" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.min.css" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.structure.css" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.structure.min.css" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.css" />
+    <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.min.css" />
+    <Content Include="public\stylesheets\style.styl" />
+    <Content Include="README.md" />
+    <Content Include="views\index.jade" />
+    <Content Include="views\layout.jade" />
+    <Content Include="views\error.jade" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="app\" />
+    <Folder Include="app\models\" />
+    <Folder Include="bin\" />
+    <Folder Include="data\" />
+    <Folder Include="public\" />
+    <Folder Include="public\assets\" />
+    <Folder Include="public\assets\css\" />
+    <Folder Include="public\assets\fonts\" />
+    <Folder Include="public\assets\i\" />
+    <Folder Include="public\assets\i\examples\" />
+    <Folder Include="public\assets\js\" />
+    <Folder Include="public\assets\js\footable\" />
+    <Folder Include="public\assets\js\footable\css\" />
+    <Folder Include="public\assets\js\footable\css\fonts\" />
+    <Folder Include="public\assets\js\footable\js\" />
+    <Folder Include="public\assets\js\jqplot\" />
+    <Folder Include="public\assets\js\jqplot\plugins\" />
+    <Folder Include="public\assets\js\jquery-ui-1.11.2.custom\" />
+    <Folder Include="public\assets\js\jquery-ui-1.11.2.custom\external\" />
+    <Folder Include="public\assets\js\jquery-ui-1.11.2.custom\external\jquery\" />
+    <Folder Include="public\assets\js\jquery-ui-1.11.2.custom\images\" />
+    <Folder Include="public\assets\js\polyfill\" />
+    <Folder Include="public\assets\js\switch\" />
+    <Folder Include="public\assets\js\switch\css\" />
+    <Folder Include="public\assets\js\switch\js\" />
+    <Folder Include="public\assets\js\timeline\" />
+    <Folder Include="public\assets\js\timeline\css\" />
+    <Folder Include="public\assets\js\timeline\js\" />
+    <Folder Include="public\images\" />
+    <Folder Include="public\stylesheets\" />
+    <Folder Include="public\web\" />
+    <Folder Include="routes\" />
+    <Folder Include="views\" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

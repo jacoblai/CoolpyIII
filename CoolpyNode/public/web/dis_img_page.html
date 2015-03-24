@@ -1,0 +1,68 @@
+﻿<div id="imgsModel">
+    <div data-am-widget="list_news" class="am-list-news am-list-news-default">
+        <!--列表标题-->
+        <div class="am-list-news-hd am-cf">
+            <!--带更多链接-->
+            <a href="###">
+                <h2 data-bind="text: title"></h2>
+                <!--<span class="am-list-news-more am-fr">更多 &raquo;</span>-->
+            </a>
+        </div>
+        <div class="am-list-news-bd">
+            <section id="cd-timeline" class="cd-container" data-bind="foreach: { data: dps }">
+                <!-- ko -->
+                <div class="cd-timeline-block">
+                    <div class="cd-timeline-img cd-picture">
+                        <img src="../img/cd-icon-picture.svg">
+                    </div> <!-- cd-timeline-img -->
+                    <div class="cd-timeline-content">
+                        <h2 data-bind="text:timestamp"></h2>
+                        <p><img data-bind="attr: { id: timestamp }" class="am-radius am-img-thumbnail" /></p>
+                        <!--<a href="#0" class="cd-read-more">Read more</a>-->
+                        <span class="cd-date"></span>
+                    </div> <!-- cd-timeline-content -->
+                </div> <!-- cd-timeline-block -->
+                <!-- /ko -->
+            </section> <!-- cd-timeline -->
+        </div>
+    </div>
+</div>
+<link href="../assets/js/timeline/css/style.css" rel="stylesheet" />
+<script src="../assets/js/timeline/js/timeline.js"></script>
+<script type="text/javascript">
+    function centervm() {
+        var self = this;
+        self.title = ko.observable();
+        self.title('设备编号：' + $.AMUI.utils.cookie.get('dvid') + '，传感器编号：' + $.AMUI.utils.cookie.get('ssid'));
+        self.dps = ko.observable();
+
+        self.start = ko.observable();
+        self.end = ko.observable();
+        self.oneday = function () {
+            self.start(new Date());
+            self.start().setDate(self.start().getDate() - 1);
+            self.end(new Date());
+            self.loaddata();
+        };
+        self.loaddata = function () {
+            $.ajax({
+                url: "v1.0/device/" + $.AMUI.utils.cookie.get('dvid') + "/sensor/" + $.AMUI.utils.cookie.get('ssid')
+                + "/json?start=" + self.start().pattern("yyyy-MM-ddTHH:mm:ss") + "&end=" + self.end().pattern("yyyy-MM-ddTHH:mm:ss") + "&interval=10&page=1",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                self.dps(data);
+                ko.utils.arrayForEach(data, function (val) {
+                    document.getElementById(val.timestamp).src = "data:image/png;base64," + val.img;
+                });
+            }).fail(function (xhr) {
+                //var err = eval("(" + data.responseText + ")");
+            });
+        };
+    };
+    var ctvm = new centervm();
+    //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒
+    setTimeout('ctvm.oneday()', 100);
+    ko.applyBindings(ctvm, document.getElementById("imgsModel"));
+</script>

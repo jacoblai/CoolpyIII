@@ -1,0 +1,167 @@
+﻿<div class="am-panel am-panel-default">
+    <div class="am-panel-hd"></div>
+    <div class="am-panel-bd">
+        <div id="editdvModel" class="am-form">
+            <div class="am-form-group">
+                <label>设备名:</label>
+                <input type="text" data-bind="value: title">
+                <p class="am-alert-danger" data-bind="validationMessage: title"></p>
+                <p class="am-form-help">给你的设备起个容易记住的名字，不超过30个字符</p>
+            </div>
+
+            <div class="am-form-group">
+                <label>标签 TAGS:</label>
+                <input type="text" data-bind="value: tags">
+                <p class="am-alert-danger" data-bind="validationMessage: tags"></p>
+                <p class="am-form-help">各关键词间用逗号(,)分隔</p>
+            </div>
+
+            <div class="am-form-group">
+                <label>描述:</label>
+                <input type="text" data-bind="value: about">
+                <p class="am-alert-danger" data-bind="validationMessage: about"></p>
+                <p class="am-form-help">给你的设备起个容易记住的名字，不超过30个字符</p>
+            </div>
+
+            <div class="am-form-group">
+                <label>地理位置名称:</label>
+                <input type="text" data-bind="value: local">
+                <p class="am-alert-danger" data-bind="validationMessage: local"></p>
+                <p class="am-form-help">点击地图即可自动填写此项</p>
+            </div>
+
+            <div id="allmap"></div>
+
+            <div class="am-form-group">
+                <label>纬度:</label>
+                <input type="text" data-bind="value: latitude" readonly>
+                <p class="am-alert-danger" data-bind="validationMessage: latitude"></p>
+            </div>
+
+            <div class="am-form-group">
+                <label>经度:</label>
+                <input type="text" data-bind="value: longitude" readonly>
+                <p class="am-alert-danger" data-bind="validationMessage: longitude"></p>
+            </div>
+
+            <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+                <ul class="am-navbar-nav am-cf am-avg-sm-4">
+                    <li>
+                        <a data-bind="click: editdvSave">
+                            <span class="am-icon-save"></span>
+                            <span class="am-navbar-label">保 存</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a data-bind="click: cancel">
+                            <span class="am-icon-undo"></span>
+                            <span class="am-navbar-label">返 回</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function adddvvm() {
+        var self = this;
+        self.title = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.about = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.tags = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.local = ko.observable().extend({ required: true, minLength: 2, maxLength: 64 });
+        self.latitude = ko.observable().extend({ required: true, min: -90, max: 90 });
+        self.longitude = ko.observable().extend({ required: true, min: -180, max: 180 });
+
+        self.getjson = function () {
+            if (self.isValid()) {
+                var dv = new Object();
+                dv.title = self.title();
+                dv.about = self.about();
+                dv.tags = self.tags().toString().split(",");
+                dv.location = { "local": self.local(), "latitude": self.latitude(), "longitude": self.longitude() }
+                return JSON.stringify(dv);
+            } else {
+                $("#msg").html("数据验证失败！");
+                $('#my-prompt').modal('open');
+            }
+        };
+
+        self.editdvSave = function () {
+            $.ajax({
+                type: "PUT",
+                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid'),
+                data: self.getjson(),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey')),
+                    xhr.setRequestHeader("Content-Type", "application/json")
+                },
+                success: function (data) {
+                    if (data === "") {
+                        $("#render").load("web/dvs_page.html");
+                    } else {
+                        $("#msg").html(data);
+                        $('#my-prompt').modal('open');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#msg").html(xhr.responseText);
+                    $('#my-prompt').modal('open');
+                }
+            });
+        };
+
+        self.cancel = function () {
+            $.AMUI.utils.cookie.set('dvid', null);
+            $("#render").load("web/dvs_page.html");
+        };
+
+        self.getdata = function () {
+            $.ajax({
+                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid'),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                self.title(data.title);
+                self.about(data.about);
+                self.tags(data.tags.toString());
+                self.local(data.location.local);
+                self.latitude(data.location.latitude);
+                self.longitude(data.location.longitude);
+                
+            });
+        }
+    };
+    var dvvm = new adddvvm();
+    dvvm.getdata();
+    ko.applyBindings(ko.validatedObservable(dvvm), document.getElementById("editdvModel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/dvs_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom(true);
+    map.centerAndZoom("广州", 12);
+    var geoc = new BMap.Geocoder();
+    //单击获取点击的经纬度
+    map.addEventListener("click", function (e) {
+        map.clearOverlays();
+        dvvm.longitude(e.point.lng);
+        dvvm.latitude(e.point.lat);
+        geoc.getLocation(e.point, function (rs) {
+            var addComp = rs.addressComponents;
+            dvvm.local(addComp.city + addComp.district);
+        });
+        var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat));
+        map.addOverlay(marker);
+    });
+</script>

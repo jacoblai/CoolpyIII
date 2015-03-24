@@ -1,0 +1,118 @@
+﻿<div class="am-input-group am-input-group-warning">
+    <span class="am-input-group-label"><i class="am-icon-search"></i></span>
+    <input type="text" id="filter" placeholder="查找" class="am-form-field">
+</div>
+<table class="footable table" data-page-size="15" data-filter="#filter" data-filter-minimum="1" data-filter-timeout="500" data-filter-text-only="true">
+    <thead>
+        <tr>
+            <th>设备名称</th>
+            <th data-hide="phone,tablet">设备备注</th>
+            <th>标签</th>
+            <th data-hide="phone">位置</th>
+            <th data-hide="phone,tablet">经度</th>
+            <th data-hide="phone,tablet">纬度</th>
+            <th data-hide="phone,tablet" data-sort-ignore="true"></th>
+        </tr>
+    </thead>
+    <tbody id="dvmodel" data-bind="foreach: dvs">
+        <tr>
+            <td data-bind="text: title"></td>
+            <td data-bind="text: about"></td>
+            <td data-bind="text: tags"></td>
+            <td data-bind="text: location.local"></td>
+            <td data-bind="text: location.longitude"></td>
+            <td data-bind="text: location.latitude"></td>
+            <td>
+                <a href="#" data-bind="click: $parent.editclick" class="am-btn am-btn-primary am-btn-sm">修改</a>
+                <a href="#" data-bind="click: $parent.delclick" class="am-btn am-btn-primary am-btn-sm">删除</a>
+                <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                <a href="#" data-bind="click: $parent.addssclick" class="am-btn am-btn-primary am-btn-sm">添加传感器</a>
+                <a href="#" data-bind="click: $parent.allssclick" class="am-btn am-btn-primary am-btn-sm">传感器管理</a>
+            </td>
+        </tr>
+    </tbody>
+    <tfoot class="hide-if-no-paging">
+        <tr>
+            <td colspan="7">
+                <div class="pagination pagination-centered"></div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<script type="text/javascript">
+    function dvsvm() {
+        var self = this;
+        self.dvs = ko.observable();
+        self.loaddata = function () {
+            $.ajax({
+                url: "/v1.0/devices",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                 self.dvs(data);
+                $('.footable').footable().trigger('footable_initialize');
+            });
+        };
+        self.addssclick = function (dv) {
+            $.AMUI.utils.cookie.set("dvid", dv.id);
+            $("#render").load("web/ssadd_page.html");
+        };
+        self.allssclick = function (dv) {
+            $.AMUI.utils.cookie.set("dvid", dv.id);
+            $("#render").load("web/sss_page.html");
+        };
+        self.editclick = function (dv) {
+            $.AMUI.utils.cookie.set("dvid", dv.id);
+            $("#render").load("web/dvedit_page.html");
+        };
+        self.delclick = function (dv) {
+            $("#dialog-confirm").html("你确定想删除吗？");
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                modal: true,
+                title: "酷痞物联",
+                height: 250,
+                width: 250,
+                buttons: {
+                    "确定": function () {
+                        $(this).dialog('close');
+                        $.ajax({
+                            url: "/v1.0/device/" + dv.id,
+                            type: "DELETE",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                            }
+                        }).done(function (data) {
+                            if (data === "") {
+                                self.loaddata();
+                            } else {
+                                $("#msg").html(data);
+                                $('#my-prompt').modal('open');
+                            }
+                        }).fail(function (xhr) {
+                            $("#msg").html(xhr.responseText);
+                            $('#my-prompt').modal('open');
+                        });
+                    },
+                    "取消": function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        };
+    }
+    var dvvm = new dvsvm();
+    dvvm.loaddata();
+    ko.applyBindings(dvvm, document.getElementById("dvmodel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>

@@ -1,0 +1,72 @@
+﻿    <section id="cd-timeline" class="cd-container">
+    <div class="cd-timeline-block">
+        <div class="cd-timeline-img">
+            <a href="" class="am-icon-btn am-primary am-icon-hdd-o"></a>
+        </div> <!-- cd-timeline-img -->
+
+        <div class="cd-timeline-content">
+            <h2>添加设备</h2>
+            <p>设备被定义为包含一个或多个传感器的代表节点，通常物联网专业述语称为Node节点</p>
+            <a href="#" data-bind="click: adddv" class="cd-read-more">马上添加设备</a>
+            <span class="cd-date">第一步</span>
+        </div> <!-- cd-timeline-content -->
+    </div> <!-- cd-timeline-block -->
+
+    <div class="cd-timeline-block">
+        <div class="cd-timeline-img">
+            <a href="" class="am-icon-btn am-secondary am-icon-plug"></a>
+        </div> <!-- cd-timeline-img -->
+
+        <div class="cd-timeline-content">
+            <h2>添加传感器</h2>
+            <p>传感器被定义为一个独立的硬件，它可以是一个湿度或温度功能的硬件设备，也可以是一个开关。</p>
+            <a href="#" data-bind="click: addss" class="cd-read-more">马上添加传感器</a>
+            <span class="cd-date">第二步</span>
+        </div> <!-- cd-timeline-content -->
+    </div> <!-- cd-timeline-block -->
+
+    <div class="cd-timeline-block">
+        <div class="cd-timeline-img">
+            <a href="" class="am-icon-btn am-success am-icon-upload"></a>
+        </div> <!-- cd-timeline-img -->
+
+        <div class="cd-timeline-content">
+            <h2>上传数据</h2>
+            <p>使用硬件设备调用API建立物联网数据提交功能，让你的硬件把数据都提交到酷痞物联平台吧。</p>
+            <a href="http://icoolpy.com/docs.html#datapoints" target="_blank" class="cd-read-more">查看API文档</a>
+            <span class="cd-date">第三步</span>
+        </div> <!-- cd-timeline-content -->
+    </div> <!-- cd-timeline-block -->
+
+    <div class="cd-timeline-block">
+        <div class="cd-timeline-img">
+            <a href="" class="am-icon-btn am-warning am-icon-download"></a>
+        </div> <!-- cd-timeline-img -->
+
+        <div class="cd-timeline-content">
+            <h2>取回数据</h2>
+            <p>通过客户端或API可以把你设备提交到平台的数据取回，可以通过客户端或其他调用API的技术取回数据。</p>
+            <a href="http://icoolpy.com/docs.html" target="_blank" class="cd-read-more">查看API文档</a>
+            <span class="cd-date">第四步</span>
+        </div> <!-- cd-timeline-content -->
+    </div> <!-- cd-timeline-block -->
+    
+</section> <!-- cd-timeline -->
+<link href="../assets/js/timeline/css/style.css" rel="stylesheet" />
+<script src="../assets/js/timeline/js/timeline.js"></script>
+<script type="text/javascript">
+    function centervm() {
+        var self = this;
+
+        self.adddv = function () {
+            $("#render").load("web/dvadd_page.html");
+        }
+
+        self.addss = function () {
+            $("#render").load("web/sss_page.html");
+        }
+       
+    };
+    var ctvm = new centervm();
+    ko.applyBindings(ctvm, document.getElementById("cd-timeline"));
+</script>
