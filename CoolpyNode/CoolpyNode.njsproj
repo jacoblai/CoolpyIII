@@ -70,7 +70,9 @@
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.structure.min.css" />
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.css" />
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.min.css" />
+    <Content Include="public\index.html" />
     <Content Include="public\stylesheets\style.styl" />
+    <Content Include="public\web\center_page.html" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\error.jade" />
