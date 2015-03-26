@@ -31,11 +31,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="app\func\imageInfo.js" />
     <Compile Include="app\models\admin.js" />
     <Compile Include="app\models\device.js" />
     <Compile Include="app\models\gencontroldp.js" />
     <Compile Include="app\models\gendp.js" />
     <Compile Include="app\models\gpsdp.js" />
+    <Compile Include="app\models\imgdp.js" />
     <Compile Include="app\models\rangecontroldp.js" />
     <Compile Include="app\models\sensor.js" />
     <Compile Include="app\models\swsdp.js" />
@@ -70,9 +72,11 @@
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.structure.min.css" />
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.css" />
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.min.css" />
+    <Content Include="public\images\camera.png" />
     <Content Include="public\index.html" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\web\center_page.html" />
+    <Content Include="public\web\dis_img_page.html" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\error.jade" />
@@ -80,6 +84,7 @@
   <ItemGroup>
     <Folder Include="app\" />
     <Folder Include="app\models\" />
+    <Folder Include="app\func\" />
     <Folder Include="bin\" />
     <Folder Include="data\" />
     <Folder Include="public\" />

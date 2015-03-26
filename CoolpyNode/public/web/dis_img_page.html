@@ -13,12 +13,13 @@
                 <!-- ko -->
                 <div class="cd-timeline-block">
                     <div class="cd-timeline-img cd-picture">
-                        <img src="../img/cd-icon-picture.svg">
-                    </div> <!-- cd-timeline-img -->
+                        <img src="../images/camera.png" />
+                    </div>
+                    <!-- cd-timeline-img -->
                     <div class="cd-timeline-content">
                         <h2 data-bind="text:timestamp"></h2>
                         <p><img data-bind="attr: { id: timestamp }" class="am-radius am-img-thumbnail" /></p>
-                        <!--<a href="#0" class="cd-read-more">Read more</a>-->
+                        <a href="#" class="cd-read-more" data-bind="text:value.type"></a>
                         <span class="cd-date"></span>
                     </div> <!-- cd-timeline-content -->
                 </div> <!-- cd-timeline-block -->

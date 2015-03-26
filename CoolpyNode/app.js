@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require('validator');
+var imageinfo = require('./app/func/imageInfo.js');
 var config = require('./config.js');
 String.prototype.startWith = function (str) {
     var reg = new RegExp("^" + str);
@@ -53,6 +54,7 @@ app.use(defaultContentTypeMiddleware);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.raw({ type: 'application/octet-stream', limit: config.maxImageSize }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -77,6 +79,7 @@ var ValuedpModel = require('./app/models/valuedp.js');
 var GpsdpModel = require('./app/models/gpsdp.js');
 var GendpModel = require('./app/models/gendp.js');
 var SwsdpModel = require('./app/models/swsdp.js');
+var ImgdpModel = require('./app/models/imgdp.js');
 var GencontrolModel = require('./app/models/gencontroldp.js');
 var RangecontrolModel = require('./app/models/rangecontroldp.js');
 var UserModel = require('./app/models/admin.js');
@@ -738,6 +741,161 @@ function putsensor(req, res){
     });
 }
 
+router.route('/device/:dvid/sensor/:ssid/photos')
+  .post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "photo") {
+        info = imageinfo(req.body);
+        if (info.mimeType !== undefined) {
+            var imgdp = new ImgdpModel();
+            imgdp.dvid = req.params.dvid;
+            imgdp.ssid = req.params.ssid;
+            imgdp.img = req.body;
+            imgdp.value = { type: info.mimeType, size: req.body.length, width: info.width, height: info.height };
+            imgdp.save(function (err, imgs) {
+                if (err) {
+                    if (!config.production) {
+                        res.send(err);
+                    } else {
+                        res.status(404);
+                        res.end();
+                    }
+                } else {
+                    res.end();
+                }
+            });
+        } else {
+            res.status(415);
+            res.end();
+        }
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
+router.route('/device/:dvid/sensor/:ssid/photo/info')
+	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "photo") { 
+        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                if (dp !== null) {
+                    var obj = dp.toObject();
+                    delete obj._id;
+                    delete obj.__v;
+                    delete obj.img;
+                    //delete obj.dvid;
+                    //delete obj.ssid;
+                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                    res.json(obj);
+                } else {
+                    res.end();
+                }
+            }
+        });
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
+router.route('/device/:dvid/sensor/:ssid/photo/info/:key')
+	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "photo") {
+        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                if (dp !== null) {
+                    var obj = dp.toObject();
+                    delete obj._id;
+                    delete obj.__v;
+                    delete obj.img;
+                    delete obj.dvid;
+                    delete obj.ssid;
+                    delete obj.timestamp;
+                    //obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                    res.json(obj);
+                } else {
+                    res.end();
+                }
+            }
+        });
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
+router.route('/device/:dvid/sensor/:ssid/photo/content')
+	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "photo") {
+        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                if (dp !== null) {
+                    var obj = dp.toObject();
+                    res.writeHead(200, {
+                        'Content-Type': 'application/octet-stream'
+                    });
+                    res.end(obj.img.toString()); 
+                } else {
+                    res.end();
+                }
+            }
+        });
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
+router.route('/device/:dvid/sensor/:ssid/photo/content/:key')
+	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "photo") {
+        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                if (dp !== null) {
+                    var obj = dp.toObject();
+                    res.writeHead(200, {
+                        'Content-Type': 'application/octet-stream'
+                    });
+                    res.end(obj.img.toString()); 
+                } else {
+                    res.end();
+                }
+            }
+        });
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
 //数据结点管理api
 router.route('/device/:dvid/sensor/:ssid/datapoints')
     //Content-Type 必须为application/json
@@ -1250,15 +1408,42 @@ function putdatapoint(req, res){
 //查询数据历史管理api
 router.route('/device/:dvid/sensor/:ssid/json')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
-        var start = req.query.start;
-        var end = req.query.end;
-        var itv = req.query.interval;
-        var page = req.query.page;
-        if (validator.isInt(page)) {
-            if (req.type === "gen") {
-                GendpModel.find({
-                    dvid: req.params.dvid, ssid: req.params.ssid
-                }).sort({ _id: -1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
+    var start = req.query.start;
+    var end = req.query.end;
+    var itv = req.query.interval;
+    var page = req.query.page;
+    if (validator.isInt(page)) {
+        if (req.type === "gen") {
+            GendpModel.find({
+                dvid: req.params.dvid, ssid: req.params.ssid
+            }).sort({ _id: -1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
+                if (err) {
+                    if (!config.production) {
+                        res.send(err);
+                    } else {
+                        res.status(404);
+                        res.end();
+                    }
+                } else {
+                    var rs_dps = [];
+                    dps.forEach(function (dp) {
+                        var obj = dp.toObject();
+                        delete obj._id;
+                        delete obj.__v;
+                        delete obj.dvid;
+                        delete obj.ssid;
+                        rs_dps.push(obj);
+                    });
+                    res.json(rs_dps);
+                }
+            });
+        } else {
+            if (validator.isInt(itv) && validator.isDate(start) && validator.isDate(end)) {
+                if (req.type === "value") {
+                    ValuedpModel.find({
+                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        timestamp: { "$gte": start, "$lte": end }
+                    }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
                         if (err) {
                             if (!config.production) {
                                 res.send(err);
@@ -1268,104 +1453,117 @@ router.route('/device/:dvid/sensor/:ssid/json')
                             }
                         } else {
                             var rs_dps = [];
+                            var dts = null;
                             dps.forEach(function (dp) {
                                 var obj = dp.toObject();
-                                delete obj._id;
-                                delete obj.__v;
-                                delete obj.dvid;
-                                delete obj.ssid;
-                                rs_dps.push(obj);
+                                if (dts === null) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    rs_dps.push(obj);
+                                } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    rs_dps.push(obj);
+                                }
                             });
                             res.json(rs_dps);
                         }
                     });
-            } else {
-                if (validator.isInt(itv) && validator.isDate(start) && validator.isDate(end)) {
-                    if (req.type === "value") {
-                        ValuedpModel.find({
-                            dvid: req.params.dvid, ssid: req.params.ssid, 
-                            timestamp: { "$gte": start, "$lte": end }
-                        }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
-                                if (err) {
-                                    if (!config.production) {
-                                        res.send(err);
-                                    } else {
-                                        res.status(404);
-                                        res.end();
-                                    }
-                                } else {
-                                    var rs_dps = [];
-                                    var dts = null;
-                                    dps.forEach(function (dp) {
-                                        var obj = dp.toObject();
-                                        if (dts === null) {
-                                            dts = obj.timestamp;
-                                            delete obj._id;
-                                            delete obj.__v;
-                                            delete obj.dvid;
-                                            delete obj.ssid;
-                                            obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
-                                            rs_dps.push(obj);
-                                        } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
-                                            dts = obj.timestamp;
-                                            delete obj._id;
-                                            delete obj.__v;
-                                            delete obj.dvid;
-                                            delete obj.ssid;
-                                            obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
-                                            rs_dps.push(obj);
-                                        }
-                                    });
-                                    res.json(rs_dps);
+                } else if (req.type === "gps") {
+                    GpsdpModel.find({
+                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        timestamp: { "$gte": start, "$lte": end }
+                    }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
+                        if (err) {
+                            if (!config.production) {
+                                res.send(err);
+                            } else {
+                                res.status(404);
+                                res.end();
+                            }
+                        } else {
+                            var rs_dps = [];
+                            var dts = null;
+                            dps.forEach(function (dp) {
+                                var obj = dp.toObject();
+                                if (dts === null) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    rs_dps.push(obj);
+                                } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    rs_dps.push(obj);
                                 }
                             });
-                    } else if (req.type === "gps") {
-                        GpsdpModel.find({
-                            dvid: req.params.dvid, ssid: req.params.ssid, 
-                            timestamp: { "$gte": start, "$lte": end }
-                        }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
-                                if (err) {
-                                    if (!config.production) {
-                                        res.send(err);
-                                    } else {
-                                        res.status(404);
-                                        res.end();
-                                    }
-                                } else {
-                                    var rs_dps = [];
-                                    var dts = null;
-                                    dps.forEach(function (dp) {
-                                        var obj = dp.toObject();
-                                        if (dts === null) {
-                                            dts = obj.timestamp;
-                                            delete obj._id;
-                                            delete obj.__v;
-                                            delete obj.dvid;
-                                            delete obj.ssid;
-                                            obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
-                                            rs_dps.push(obj);
-                                        } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
-                                            dts = obj.timestamp;
-                                            delete obj._id;
-                                            delete obj.__v;
-                                            delete obj.dvid;
-                                            delete obj.ssid;
-                                            obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
-                                            rs_dps.push(obj);
-                                        }
-                                    });
-                                    res.json(rs_dps);
+                            res.json(rs_dps);
+                        }
+                    });
+                } else if (req.type === "photo") { 
+                    ImgdpModel.find({
+                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        timestamp: { "$gte": start, "$lte": end }
+                    }).sort({ timestamp: 1 }).skip((page - 1) * 20).limit(20).exec(function (err, dps) {
+                        if (err) {
+                            if (!config.production) {
+                                res.send(err);
+                            } else {
+                                res.status(404);
+                                res.end();
+                            }
+                        } else {
+                            var rs_dps = [];
+                            var dts = null;
+                            dps.forEach(function (dp) {
+                                var obj = dp.toObject();
+                                if (dts === null) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    obj.img = obj.img.toString('base64');
+                                    rs_dps.push(obj);
+                                } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
+                                    dts = obj.timestamp;
+                                    delete obj._id;
+                                    delete obj.__v;
+                                    delete obj.dvid;
+                                    delete obj.ssid;
+                                    obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
+                                    obj.img = obj.img.toString('base64');
+                                    rs_dps.push(obj);
                                 }
                             });
-                    } 
-                } else {
-                    res.json({ Error: "no value" });
+                            res.json(rs_dps);
+                        }
+                    });
                 }
+            } else {
+                res.json({ Error: "no value" });
             }
-        } else {
-            res.json({ Error: "no value" });
         }
-    });
+    } else {
+        res.json({ Error: "no value" });
+    }
+});
 
 // all of our routes will be prefixed with /api
 app.use('/v1.0', router);
