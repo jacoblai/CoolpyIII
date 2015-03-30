@@ -77,6 +77,7 @@
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\web\center_page.html" />
     <Content Include="public\web\dis_img_page.html" />
+    <Content Include="public\web\sss_page.html" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\error.jade" />

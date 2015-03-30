@@ -74,7 +74,13 @@
                 }
             }).done(function (data) {
                 data.forEach(function (dt) {
-                    dt.api =  '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/datapoints';
+                    if (dt.type === "photo") {
+                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/photos';
+                    } else if (dt.type === "switcher" || dt.type === "gencontrol" || dt.type === "rangecontrol") {
+                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/datapoint';
+                    } else {
+                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/datapoints';
+                    }
                     self.sss.push(dt);
                 })
                 $('.footable').footable().trigger('footable_initialize');
