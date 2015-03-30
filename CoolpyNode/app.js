@@ -1599,9 +1599,4 @@ app.use(function (err, req, res, next) {
     });
 });
 
-//发布时以下换到www文件
-//var app = require('../app');
-//var server = app.listen(1337, '0.0.0.0');
-//console.log('Server running at http://127.0.0.1:1337/');
-
 module.exports = app;
