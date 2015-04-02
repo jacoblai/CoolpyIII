@@ -1,0 +1,3 @@
+﻿1.第一次更新包修改文件
+node_modules\mongoose\node_modules\mongodb\node_modules\bson\ext\index.js内容为
+bson = require('../browser_build/bson');  

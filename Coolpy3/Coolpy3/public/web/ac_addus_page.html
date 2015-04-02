@@ -1,0 +1,119 @@
+﻿<div class="am-panel am-panel-default">
+    <div class="am-panel-hd"></div>
+    <div class="am-panel-bd">
+        <div id="acModel" class="am-form">
+            <div class="am-form-group">
+                <label>用户名:</label>
+                <input type="text" data-bind="value: userId">
+                <p class="am-alert-danger" data-bind="validationMessage: userId"></p>
+                <p class="am-form-help">不超过30个字符</p>
+            </div>
+            <div class="am-form-group">
+                <label>密码:</label>
+                <input type="text" data-bind="value: pwd">
+                <p class="am-alert-danger" data-bind="validationMessage: pwd"></p>
+                <p class="am-form-help">不超过30个字符</p>
+            </div>
+            <div class="am-form-group">
+                <label>用户姓名:</label>
+                <input type="text" data-bind="value: userName">
+                <p class="am-alert-danger" data-bind="validationMessage: userName"></p>
+                <p class="am-form-help">不超过30个字符</p>
+            </div>
+            <div class="am-form-group">
+                <label>电子邮件地址:</label>
+                <input type="text" data-bind="value: email">
+                <p class="am-alert-danger" data-bind="validationMessage: email"></p>
+                <p class="am-form-help">不超过30个字符</p>
+            </div>
+            <div class="am-form-group">
+                <label>QQ号:</label>
+                <input type="text" data-bind="value: qq">
+                <p class="am-alert-danger" data-bind="validationMessage: qq"></p>
+                <p class="am-form-help">不超过30个字符</p>
+            </div>
+
+                <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+                    <ul class="am-navbar-nav am-cf am-avg-sm-4">
+                        <li>
+                            <a data-bind="click: acSave">
+                                <span class="am-icon-save"></span>
+                                <span class="am-navbar-label">保 存</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var uri = "/v1.0/user?username=" + $.AMUI.utils.cookie.get('uid') + "&pass=" + $.AMUI.utils.cookie.get('pwd');
+    function acvm() {
+        var self = this;
+        self.userId = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.pwd = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.userName = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.email = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.qq = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+
+        self.getjson = function () {
+            var dv = new Object();
+            dv.userId = self.userId();
+            dv.pwd = self.pwd();
+            dv.userName = self.userName();
+            dv.email = self.email();
+            dv.qq = self.qq();
+            return JSON.stringify(dv);
+        };
+
+        self.acSave = function () {
+            if (self.isValid()) {
+                $.ajax({
+                    type: "POST",
+                    url: uri,
+                    data: self.getjson(),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Content-Type", "application/json")
+                    },
+                    success: function (result) {
+                        if (result === "") {
+                            $("#render").load("web/ac_uss_page.html");
+                        } else {
+                            $("#msg").html(result);
+                            $('#my-prompt').modal('open');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $("#msg").html(xhr.responseText);
+                        $('#my-prompt').modal('open');
+                    }
+                });
+            } else {
+                $("#msg").html("数据验证失败！");
+                $('#my-prompt').modal('open');
+            }
+        };
+
+        self.cancel = function () {
+            self.userId("");
+            self.pwd("");
+            self.userName("");
+            self.email("");
+            self.qq("");
+        };
+
+    }
+    var dvvm = new acvm();
+    ko.applyBindings(ko.validatedObservable(dvvm), document.getElementById("acModel"));
+    dvvm.cancel();
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>

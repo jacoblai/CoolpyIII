@@ -1,0 +1,93 @@
+﻿<div class="am-panel am-panel-default">
+    <div class="am-panel-hd"></div>
+    <div class="am-panel-bd">
+        <div id="acpwdModel" class="am-form">
+            <div class="am-form-group">
+                <label>原密码:</label>
+                <input type="password" data-bind="value: oldpwd">
+                <p class="am-alert-danger" data-bind="validationMessage: oldpwd"></p>
+            </div>
+            <div class="am-form-group">
+                <label>新密码:</label>
+                <input type="password" data-bind="value: newpwd">
+                <p class="am-alert-danger" data-bind="validationMessage: newpwd"></p>
+            </div>
+            <div class="am-form-group">
+                <label>请再次输入新密码:</label>
+                <input type="password" data-bind="value: newpwdre">
+                <p class="am-alert-danger" data-bind="validationMessage: newpwdre"></p>
+            </div>
+            <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+                <ul class="am-navbar-nav am-cf am-avg-sm-4">
+                    <li>
+                        <a data-bind="click: acpwdSave">
+                            <span class="am-icon-save"></span>
+                            <span class="am-navbar-label">保 存</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function pwdvm() {
+        var self = this;
+        self.oldpwd = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.newpwd = ko.observable().extend({ required: true, minLength: 3, maxLength: 64 });
+        self.newpwdre = ko.observable().extend({ equal: self.newpwd });
+
+        self.getjson = function () {
+            if (self.isValid()) {
+                var dv = new Object();
+                dv.userId = $.AMUI.utils.cookie.get('uid');
+                dv.pwd = self.newpwd();
+                return JSON.stringify(dv);
+            } else {
+                $("#msg").html("数据验证失败！");
+                $('#my-prompt').modal('open');
+            }
+        };
+
+        self.acpwdSave = function () {
+            if (self.isValid()) {
+                var uri = "/v1.0/user?username=" + $.AMUI.utils.cookie.get('uid') + "&pass=" + self.oldpwd();
+                $.ajax({
+                    type: "PUT",
+                    url: uri,
+                    data: self.getjson(),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Content-Type", "application/json")
+                    },
+                    success: function (result) {
+                        if (result === "") {
+                            $.AMUI.utils.cookie.set('ukey', null);
+                            $.AMUI.utils.cookie.set('uid', null);
+                            $.AMUI.utils.cookie.set('pwd', null);
+                            window.location = "index.html";
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $("#msg").html(xhr.responseText);
+                        $('#my-prompt').modal('open');
+                    }
+                });
+            } else {
+                $("#msg").html("数据验证失败！");
+                $('#my-prompt').modal('open');
+            }
+        };
+    }
+    ko.applyBindings(ko.validatedObservable(new pwdvm()), document.getElementById("acpwdModel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>

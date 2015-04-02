@@ -1,0 +1,279 @@
+﻿<div id="centerModel" data-bind="foreach: { data: dvs, as: 'dv' }">
+    <div data-am-widget="list_news" class="am-list-news am-list-news-default">
+        <!--列表标题-->
+        <div class="am-list-news-hd am-cf">
+            <!--带更多链接-->
+            <a href="###" data-bind="click: $root.disdvs">
+                <h2 data-bind="text: dv.title"></h2>
+                <!--<span class="am-list-news-more am-fr">更多 &raquo;</span>-->
+            </a>
+        </div>
+        <div class="am-list-news-bd">
+            <ul data-bind="foreach: { data: dv.sss, as: 'item' }" class="am-list am-list-static am-list-border">
+                <!-- ko if: item.type === 'value' -->
+                <li class="am-g am-list-item-desced">
+                    <a href="###">
+                        <span class="am-icon-line-chart"></span> |
+                        <span data-bind="text:item.title"></span>
+                        <span class="am-fr" data-bind="click: $root.displayval">图表显示</span>
+                        <br />
+                        <span class="am-fr" data-bind="click: $root.displayval2">列表显示</span>
+                    </a>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'gps' -->
+                <li class="am-g am-list-item-desced">
+                    <a href="###" data-bind="click: $root.displaygps">
+                        <span class="am-icon-map-marker"></span> |
+                        <span data-bind="text:item.title"></span>
+                        <span class="am-fr am-icon-chevron-right"></span>
+                    </a>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'gen' -->
+                <li class="am-g am-list-item-desced">
+                    <a href="###" data-bind="click: $root.displaygen">
+                        <span class="am-icon-code"></span> |
+                        <span data-bind="text:item.title"></span>
+                        <span class="am-fr am-icon-chevron-right"></span>
+                    </a>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'photo' -->
+                <li class="am-g am-list-item-desced">
+                    <a href="###" data-bind="click: $root.displayimg">
+                        <span class="am-icon-picture-o"></span> |
+                        <span data-bind="text:item.title"></span>
+                        <span class="am-fr am-icon-chevron-right"></span>
+                    </a>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'switcher' -->
+                <li class="am-g am-list-item-desced">
+                    <span class="am-icon-power-off"></span> |
+                    <span data-bind="text:item.title"></span>
+                    <div class="switch am-fr">
+                        <input class="cmn-toggle cmn-toggle-round" type="checkbox"
+                               data-bind="attr: {id: 'cb' + item.dvid + '-' + item.id, value : item.title }, checked : $root.sws,
+                                 event:{ change: $root.switchChanged}">
+                        <label data-bind="attr: { 'for': 'cb' + item.dvid + '-' + item.id }"></label>
+                    </div>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'gencontrol' -->
+                <li class="am-g am-list-item-desced">
+                    <span class="am-icon-power-off"></span> |
+                    <span data-bind="text:item.title"></span>
+                    <div class="am-input-group">
+                        <input type="text" class="am-form-field" data-bind="attr: {id: 'gen' + item.dvid + '-' + item.id}">
+                        <span class="am-input-group-btn">
+                            <button class="am-btn am-btn-default" type="button" data-bind="click: $root.postgen">提交</button>
+                        </span>
+                    </div>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: item.type === 'rangecontrol' -->
+                <li class="am-g am-list-item-desced">
+                    <span class="am-icon-power-off"></span> |
+                    <span data-bind="text:item.title"></span>
+                    <div class="am-input-group slider">
+                        <input data-bind="attr: { id: 'ran' + item.dvid + '-' + item.id, min: item.range.min, max: item.range.max, step: item.range.step }, event: { change: $root.rangeChanged }" type="range" data-highlight="true">
+                    </div>
+                    <div class="am-list-item-text" data-bind="text:item.about"></div>
+                </li>
+                <!-- /ko -->
+            </ul>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function centervm() {
+        var self = this;
+
+        self.displaygps = function (ss) {
+            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('ssid', ss.id);
+            $("#render").load("web/dis_gps_page.html");
+        };
+
+        self.displayimg = function (ss) {
+            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('ssid', ss.id);
+            $("#render").load("web/dis_img_page.html");
+        };
+
+        self.displaygen = function (ss) {
+            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('ssid', ss.id);
+            $("#render").load("web/dis_gen_page.html");
+        };
+
+        self.displayval = function (ss) {
+            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('ssid', ss.id);
+            $("#render").load("web/dis_val_page.html");
+        };
+
+        self.displayval2 = function (ss) {
+            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('ssid', ss.id);
+            $("#render").load("web/dis_val_list_page.html");
+        };
+
+        self.disdvs = function(ss){
+            $("#render").load("web/dvs_page.html");
+        }
+
+        self.switchChanged = function (item) {
+            var dt = 0;
+            if (self.sws.indexOf(item.title) === -1) {
+                self.sws.push(item.title);
+                dt = 1;
+            } else {
+                self.sws.remove(item.title);
+                dt = 0;
+            }
+            var data = { value: dt };
+            $.ajax({
+                type: "PUT",
+                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                data: data,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                },
+                success: function (data) {
+                    if (data !== "") {
+                        $("#msg").html(data);
+                        $('#my-prompt').modal('open');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#msg").html(xhr.responseText);
+                    $('#my-prompt').modal('open');
+                }
+            });
+        };
+
+        self.postgen = function (item) {
+            var data = { value: document.getElementById('gen' + item.dvid + '-' + item.id).value };
+            $.ajax({
+                type: "PUT",
+                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                data: data,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                },
+                success: function (data) {
+                    if (data !== "") {
+                        $("#msg").html(data);
+                        $('#my-prompt').modal('open');
+                    } else {
+                        $("#msg").html('提交完成!');
+                        $('#my-prompt').modal('open');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#msg").html(xhr.responseText);
+                    $('#my-prompt').modal('open');
+                }
+            });
+        };
+
+        self.rangeChanged = function (item) {
+            var data = { value: document.getElementById('ran' + item.dvid + '-' + item.id).value };
+            $.ajax({
+                type: "PUT",
+                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                data: data,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                },
+                success: function (data) {
+                    if (data !== "") {
+                        $("#msg").html(data);
+                        $('#my-prompt').modal('open');
+                    } else {
+
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#msg").html(xhr.responseText);
+                    $('#my-prompt').modal('open');
+                }
+            });
+        }
+
+        self.sws = ko.observableArray();
+        self.dvs = ko.observableArray();
+        self.loaddata = function () {
+            $.ajax({
+                url: "/v1.0/devices",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                if (data.length === 0) {
+                    $("#render").load("web/nav_page.html");
+                } else {
+                    ko.utils.arrayForEach(data, function (dv) {
+                        $.ajax({
+                            url: "/v1.0/device/" + dv.id + "/sensors",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                            }
+                        }).done(function (ssdata) {
+                            dv.sss = ssdata;
+                            //取得所有开关的状态并修改显示状态
+                            ko.utils.arrayForEach(ssdata, function (ss) {
+                                if (ss.type === 'switcher') {
+                                    $.ajax({
+                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        beforeSend: function (xhr) {
+                                            xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                                        }
+                                    }).done(function (sw) {
+                                        if (sw.value === 1) {
+                                            self.sws.push(ss.title);
+                                        }
+                                    });
+                                } else if (ss.type === "gencontrol") {
+                                    $.ajax({
+                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        beforeSend: function (xhr) {
+                                            xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                                        }
+                                    }).done(function (gval) {
+                                        var tx = document.getElementById('gen' + ss.dvid + '-' + ss.id)
+                                        tx.value = gval.value;
+                                    });
+                                } else if (ss.type === "rangecontrol") {
+                                    $.ajax({
+                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        beforeSend: function (xhr) {
+                                            xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                                        }
+                                    }).done(function (gval) {
+                                        var tx = document.getElementById('ran' + ss.dvid + '-' + ss.id);
+                                        tx.value = gval.value;
+                                    });
+                                }
+                            })
+                            self.dvs.push(dv);
+                        });
+                    });
+                }
+            }).fail(function (xhr) {
+            });
+        };
+    };
+    var ctvm = new centervm();
+    //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒
+    setTimeout('ctvm.loaddata()', 100);
+    ko.applyBindings(ctvm, document.getElementById("centerModel"));
+</script>

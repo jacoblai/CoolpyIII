@@ -1,0 +1,190 @@
+﻿<style type="text/css">
+    #map_canvas {
+        width: 100%;
+        height: 500px;
+    }
+</style>
+<script src="../assets/js/amazeui.min.js"></script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=yI04w1qo60jCC8Qmy9a20w8G"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+<div class="am-panel am-panel-default">
+    <div class="am-panel-hd"></div>
+    <div class="am-panel-bd">
+        <div id="map_canvas"></div>
+        <div id="gpsModel" class="am-avg-sm-2">
+            <div class="am-g">
+                <div class="am-fl">
+                    <span data-bind="text:label"></span>
+                </div>
+                <div class="am-fr">
+                    <div class="am-dropdown am-dropdown-up" data-am-dropdown>
+                        <a class="am-btn am-btn-success am-dropdown-toggle" data-am-dropdown-toggle>
+                            <span class="am-icon-filter"></span>
+                            <span class="am-navbar-label">历史数据</span>
+                        </a>
+                        <ul class="am-dropdown-content">
+                            <li class="am-dropdown-header">时间跨度</li>
+                            <li><a data-bind="click: oneday">最近1天</a></li>
+                            <li><a data-bind="click: treeday">最近3天</a></li>
+                            <li><a data-bind="click: oneweek">最近1周</a></li>
+                            <li><a data-bind="click: onemonth">最近1月</a></li>
+                        </ul>
+                    </div>
+                    <a class="am-btn am-btn-success am-dropdown-toggle" data-am-dropdown-toggle data-bind="click: replay">
+                        <span class="am-icon-caret-square-o-right"></span>
+                        <span class="am-navbar-label">回放</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function centervm() {
+         //百度地图API功能
+        var map = new BMap.Map("map_canvas");
+        map.enableScrollWheelZoom(true);
+        map.centerAndZoom("中国", 5);
+        map.addControl(new BMap.NavigationControl());  //左上角，添加默认缩放平移控件
+        var opts = {
+            width: 250,     // 信息窗口宽度
+            height: 80,     // 信息窗口高度
+            title: "酷痞GPS数据", // 信息窗口标题
+            enableMessage: false//设置允许信息窗发送短息
+        };
+        function addClickHandler(content, marker) {
+            marker.addEventListener("click", function (e) {
+                openInfo(content, e)
+            });
+        }
+        function openInfo(content, e) {
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+
+        var self = this;
+        self.label = ko.observable();
+        self.label('设备编号：' + $.AMUI.utils.cookie.get('dvid') + '，传感器编号：' + $.AMUI.utils.cookie.get('ssid'));
+
+        //self.start = ko.observable();
+        //self.end = ko.observable();
+        //self.oneday = function () {
+        //    self.start(new Date());
+        //    self.start().setDate(self.start().getDate() - 1);
+        //    self.end(new Date());
+        //    self.loaddata();
+        //};
+
+        //#region 功能
+        self.start = ko.observable();
+        self.end = ko.observable();
+        self.itv = ko.observable(10);
+        self.oneday = function () {
+            self.start(new Date());
+            self.start().setDate(self.start().getDate() - 1);
+            self.end(new Date());
+            self.loaddata();
+        };
+        self.treeday = function () {
+            self.start(new Date());
+            self.start().setDate(self.start().getDate() - 3);
+            self.end(new Date());
+            self.loaddata();
+        };
+        self.oneweek = function () {
+            self.start(new Date());
+            self.start().setDate(self.start().getDate() - 7);
+            self.end(new Date());
+            self.loaddata();
+        };
+        self.onemonth = function () {
+            self.start(new Date());
+            self.start().setMonth(self.start().getMonth() - 1);
+            self.end(new Date());
+            self.loaddata();
+        };
+        //#endregion
+       
+        self.redata = ko.observableArray();
+        self.loaddata = function () {
+            $(".am-dropdown").dropdown('close');
+            map.clearOverlays();
+            $.ajax({
+                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid') + "/sensor/" + $.AMUI.utils.cookie.get('ssid')
+                + "/json?start=" + self.start().pattern("yyyy-MM-ddTHH:mm:ss")
+                + "&end=" + self.end().pattern("yyyy-MM-ddTHH:mm:ss") + "&interval=" + self.itv() + "&page=1",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                }
+            }).done(function (data) {
+                self.redata(data);
+                ko.utils.arrayForEach(data, function (val) {
+                    var myIcon = new BMap.Icon("../images/marker.png", new BMap.Size(30, 30), {
+                        anchor: new BMap.Size(15, 30)
+                    });
+                    var marker = new BMap.Marker(new BMap.Point(val.value.lng, val.value.lat), { icon: myIcon });  // 创建标注
+                    //marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+                    var content ="时间：" + val.timestamp + " 速度：" + val.value.speed + " 修正：" + val.value.offset;
+                    map.addOverlay(marker);               // 将标注添加到地图中
+                    addClickHandler(content, marker);
+                });
+            });
+        };
+
+        self.arrPois = ko.observableArray();
+        self.arrshus = ko.observableArray();
+        self.replay = function () {
+            if (self.redata().length !== 0) {
+                self.arrPois.removeAll();
+                self.arrshus.removeAll();
+                ko.utils.arrayForEach(self.redata(), function (val) {
+                    self.arrPois.push({ lng: val.value.lng, lat: val.value.lat });
+                    self.arrshus.push({ lng: val.value.lng, lat: val.value.lat, pauseTime: 2 })
+                });
+                map.centerAndZoom(new BMap.Point(self.arrPois()[0].lng, self.arrPois()[0].lat), 15);
+
+                map.clearOverlays();
+                var lushu;
+                map.addOverlay(new BMap.Polyline(self.arrPois(), { strokeColor: '#111' }));
+                map.setViewport(self.arrPois());
+                lushu = new BMapLib.LuShu(map, self.arrPois(), {
+                    defaultContent: '',
+                    autoView: true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+                    icon: new BMap.Icon('../images/car.png', new BMap.Size(42, 16), { anchor: new BMap.Size(27, 15) }),
+                    speed: 4500,
+                    enableRotation: true,//是否设置marker随着道路的走向进行旋转
+                    landmarkPois: self.arrshus()
+                });
+                setTimeout(function () {
+                    lushu.start();
+                }, 3000);
+
+                ////绑定事件
+                //$("run").onclick = function () {
+                //}
+                //$("stop").onclick = function () {
+                //    lushu.stop();
+                //}
+                //$("pause").onclick = function () {
+                //    lushu.pause();
+                //}
+            };
+        }
+    };
+    var ctvm = new centervm();
+    //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒
+    setTimeout('ctvm.oneday()', 100);
+    ko.applyBindings(ctvm, document.getElementById("gpsModel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
+</script>
