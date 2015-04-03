@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mqtt = require('mqtt');
 var validator = require('validator');
 var imageinfo = require('./app/func/imageInfo.js');
 var config = require('./config.js');
@@ -32,6 +33,11 @@ db.once('open', function callback() {
 
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
+
+if (config.mqttServer) {
+    var mqttsv = require('./mqttsv.js');
+    var client = mqtt.createClient(config.mqttPort, '127.0.0.1');
+}
 
 var app = express();
 
@@ -1169,6 +1175,11 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
                 }
             } else {
                 res.end();
+                if (config.mqttServer) {
+                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    client.publish(message, JSON.stringify(req.body));
+                    //console.log(message);
+                }
             }
         });
     } else if (req.type === "gencontrol") {
@@ -1182,6 +1193,11 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
                 }
             } else {
                 res.end();
+                if (config.mqttServer) { 
+                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    client.publish(message, JSON.stringify(req.body));
+                    //console.log(message);
+                }
             }
         });
     } else if (req.type === "rangecontrol") {
@@ -1195,6 +1211,11 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
                 }
             } else {
                 res.end();
+                if (config.mqttServer) {
+                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    client.publish(message, JSON.stringify(req.body));
+                    //console.log(message);
+                }
             }
         });
     } else {

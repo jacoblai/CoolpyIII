@@ -3,9 +3,11 @@
     mongo : 'tingodb://' + __dirname + '/data',//使用本地数据库
     cross : false,//是否接受跨域访问
     production : true,
-    v : '1.0.8',
+    v : '1.0.9',
     maxImageSize: '300kb',//系统默认最大允许上传单张图片大小限制为少于或等于300KB
     openLimit: false,//访问速速限制器开关/默认关闭,开启请设置为 true
+    mqttServer: true,//MQTT服务是否开启,默认开启
+    mqttPort: 1338,//MQTT服务端口，默认1338
     limitr: {
 //配置访问速度限制，默认是每秒1次请求
         limit: 1, //请求数量，接速率允许的请求数量

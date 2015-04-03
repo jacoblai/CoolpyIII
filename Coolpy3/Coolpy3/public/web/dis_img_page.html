@@ -66,4 +66,14 @@
     //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒
     setTimeout('ctvm.oneday()', 100);
     ko.applyBindings(ctvm, document.getElementById("imgsModel"));
+
+    //go back to main page
+    var mainmodel = ko.dataFor(document.getElementById("mainModel"));
+    mainmodel.showback(true);
+    mainmodel.showuinfo(false);
+    mainmodel.gopage = function (url) {
+        $("#render").load("web/center_page.html");
+        mainmodel.showback(false);
+        mainmodel.showuinfo(true);
+    };
 </script>

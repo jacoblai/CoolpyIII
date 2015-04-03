@@ -1,0 +1,16 @@
+before_install:
+  - sudo apt-get install libzmq3-dev
+before_script:
+  - (cd node_modules/mosca/node_modules && rm -rf ascoltatori && mkdir ascoltatori && tar -c --exclude node_modules ../../.. | tar -x -C ascoltatori)
+script:
+  - npm run coverage
+after_success:
+  - npm run publish-coverage
+language: node_js
+node_js:
+  - 0.12
+  - 0.10
+services:
+  - rabbitmq
+  - redis-server
+  - mongodb

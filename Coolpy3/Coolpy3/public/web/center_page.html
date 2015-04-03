@@ -162,6 +162,7 @@
 
         self.postgen = function (item) {
             var data = { value: document.getElementById('gen' + item.dvid + '-' + item.id).value };
+            $.AMUI.progress.start();
             $.ajax({
                 type: "PUT",
                 url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
@@ -173,14 +174,17 @@
                     if (data !== "") {
                         $("#msg").html(data);
                         $('#my-prompt').modal('open');
+                        $.AMUI.progress.done();
                     } else {
-                        $("#msg").html('提交完成!');
-                        $('#my-prompt').modal('open');
+                        //$("#msg").html('提交完成!');
+                        //$('#my-prompt').modal('open');
+                        $.AMUI.progress.done();
                     }
                 },
                 error: function (xhr, status, error) {
                     $("#msg").html(xhr.responseText);
                     $('#my-prompt').modal('open');
+                    $.AMUI.progress.done();
                 }
             });
         };
