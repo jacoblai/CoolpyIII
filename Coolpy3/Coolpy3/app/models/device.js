@@ -11,7 +11,7 @@ var strLenValidator = [
     })
 ];
 
-var DeviceSchema = new Schema({
+var HubSchema = new Schema({
     id: Number,
     ukey: { type: String },
     title: { type: String, required: true, validate: strLenValidator },
@@ -24,6 +24,6 @@ var DeviceSchema = new Schema({
     }
 });
 
-DeviceSchema.plugin(autoIncrement.plugin, { model: 'Device', field: 'id', startAt: 1, incrementBy: 1 });
+HubSchema.plugin(autoIncrement.plugin, { model: 'Hub', field: 'id', startAt: 1, incrementBy: 1 });
 
-module.exports = mongoose.model('Device', DeviceSchema);
+module.exports = mongoose.model('Hub', HubSchema);

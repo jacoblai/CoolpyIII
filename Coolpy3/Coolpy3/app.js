@@ -178,13 +178,13 @@ function isDvsInUkey(req, res, next) {
             req.ukey = ukey;
             next();
         } else {
-            res.json({ Error: 'DeviceNotInApiKey' });
+            res.json({ Error: 'HubNotInApiKey' });
         }
     });
 }
 
 function isSssInDvs(req, res, next) {
-    SensorModel.findOne({ dvid: req.params.dvid, id: req.params.ssid }, function (err, u) {
+    SensorModel.findOne({ hubid: req.params.dvid, id: req.params.ssid }, function (err, u) {
         if (u !== null) {
             next();
         } else {
@@ -194,7 +194,7 @@ function isSssInDvs(req, res, next) {
 }
 
 function getSensorType(req, res, next) {
-    SensorModel.findOne({ id: req.params.ssid, dvid: req.params.dvid }, function (err, ss) {
+    SensorModel.findOne({ id: req.params.ssid, hubid: req.params.dvid }, function (err, ss) {
         if (err) {
             res.send(err);
         } else {
@@ -219,12 +219,12 @@ function delalldvs(key) {
 }
 
 function delallss(did) {
-    SensorModel.find({ dvid: did }, function (err, docs) {
+    SensorModel.find({ hubid: did }, function (err, docs) {
         docs.forEach(function (item) {
-            delalldps(item.dvid, item.id);
+            delalldps(item.hubid, item.id);
         })
     });
-    SensorModel.remove({ dvid: did }, true);
+    SensorModel.remove({ hubid: did }, true);
 }
 
 function delalldps(dvid, ssid) {
@@ -237,27 +237,27 @@ function delalldps(dvid, ssid) {
 }
 
 function delallvaldps(dvid, ssid) {
-    ValuedpModel.remove({ dvid: dvid, ssid: ssid }, true);
+    ValuedpModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 function delallgendps(dvid, ssid) {
-    GendpModel.remove({ dvid: dvid, ssid: ssid }, true);
+    GendpModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 function delallgpsdps(dvid, ssid) {
-    GpsdpModel.remove({ dvid: dvid, ssid: ssid }, true);
+    GpsdpModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 function delallswsdps(dvid, ssid) {
-    SwsdpModel.remove({ dvid: dvid, ssid: ssid }, true);
+    SwsdpModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 function delallgencontroldps(dvid, ssid) {
-    GencontrolModel.remove({ dvid: dvid, ssid: ssid }, true);
+    GencontrolModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 function delallrangecontroldps(dvid, ssid) {
-    RangecontrolModel.remove({ dvid: dvid, ssid: ssid }, true);
+    RangecontrolModel.remove({ hubid: dvid, nodeid: ssid }, true);
 }
 
 // get an instance of router
@@ -456,7 +456,7 @@ router.route('/user/newkey')
 
 
 //设备管理api
-router.route('/devices')
+router.route('/hubs')
     //Content-Type 必须为application/json
 	.post(isAuthenticated, function (req, res) {
     var device = new DeviceModel(req.body);
@@ -470,7 +470,7 @@ router.route('/devices')
                 res.end();
             }
         } else {
-            res.json({ device_id: ndv.id });
+            res.json({ hub_id: ndv.id });
         }
     })
 })
@@ -500,7 +500,7 @@ router.route('/devices')
 });
 
 ////模拟put在post请求中
-router.route('/device/:dvid')
+router.route('/hub/:dvid')
     .post(isAuthenticated, isDvsInUkey, function (req, res) {
     if (req.query.method === "put") {
         putdevice(req, res);
@@ -603,11 +603,11 @@ function putdevice(req, res) {
 }
 
 //传感器管理api
-router.route('/device/:dvid/sensors')
+router.route('/hub/:dvid/nodes')
     //Content-Type 必须为application/json
 	.post(isAuthenticated, isDvsInUkey, function (req, res) {
     var sensor = new SensorModel(req.body);
-    sensor.dvid = req.params.dvid;
+    sensor.hubid = req.params.dvid;
     sensor.save(function (err, nss) {
         if (err) {
             if (!config.production) {
@@ -618,34 +618,34 @@ router.route('/device/:dvid/sensors')
             }
         } else if (sensor.type === "switcher") {
             var sw = new SwsdpModel();
-            sw.dvid = req.params.dvid;
-            sw.ssid = nss.id;
+            sw.hubid = req.params.dvid;
+            sw.nodeid = nss.id;
             sw.value = 0;
             sw.save();
-            res.json({ sensor_id: nss.id });
+            res.json({ node_id: nss.id });
         } else if (sensor.type === "gencontrol") {
             var genc = new GencontrolModel();
-            genc.dvid = req.params.dvid;
-            genc.ssid = nss.id;
+            genc.hubid = req.params.dvid;
+            genc.nodeid = nss.id;
             genc.value = 'null';
             genc.save();
-            res.json({ sensor_id: nss.id });
+            res.json({ node_id: nss.id });
         } else if (sensor.type === "rangecontrol") {
             var ranc = new RangecontrolModel();
-            ranc.dvid = req.params.dvid;
-            ranc.ssid = nss.id;
+            ranc.hubid = req.params.dvid;
+            ranc.nodeid = nss.id;
             ranc.value = 0;
             ranc.save();
-            res.json({ sensor_id: nss.id });
+            res.json({ node_id: nss.id });
         } else {
-            res.json({ sensor_id: nss.id });
+            res.json({ node_id: nss.id });
         }
     });
 })
 
     	// get all the bears (accessed at GET)
 	.get(isAuthenticated, isDvsInUkey, function (req, res) {
-    SensorModel.find({ dvid: req.params.dvid }, function (err, sensors) {
+    SensorModel.find({ hubid: req.params.dvid }, function (err, sensors) {
         if (err) {
             if (!config.production) {
                 res.send(err);
@@ -666,7 +666,7 @@ router.route('/device/:dvid/sensors')
     });
 });
 
-router.route('/device/:dvid/sensor/:ssid')
+router.route('/hub/:dvid/node/:ssid')
     .post(isAuthenticated, isDvsInUkey, isSssInDvs, function (req, res) {
     if (req.query.method === "put") {
         putsensor(req, res);
@@ -678,7 +678,7 @@ router.route('/device/:dvid/sensor/:ssid')
     if (req.query.method === "delete") {
         delsensor(req, res);
     } else {
-        SensorModel.findOne({ id: req.params.ssid, dvid: req.params.dvid }, function (err, ss) {
+        SensorModel.findOne({ id: req.params.ssid, hubid: req.params.dvid }, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -691,7 +691,7 @@ router.route('/device/:dvid/sensor/:ssid')
                     var obj = ss.toObject();
                     delete obj._id;
                     delete obj.__v;
-                    delete obj.dvid;
+                    delete obj.hubid;
                     res.json(obj);
                 } else { res.end(); }
             }
@@ -710,11 +710,11 @@ router.route('/device/:dvid/sensor/:ssid')
 
 function delsensor(req, res) {
     if (config.mongo.toString().startWith('tingodb')) {
-        SensorModel.remove({ id: req.params.ssid, dvid: req.params.dvid }, true);
+        SensorModel.remove({ id: req.params.ssid, hubid: req.params.dvid }, true);
         delalldps(req.params.dvid, req.params.ssid);
         res.end();
     } else {
-        SensorModel.findOneAndRemove({ id: req.params.ssid, dvid: req.params.dvid }, function (err, ss) {
+        SensorModel.findOneAndRemove({ id: req.params.ssid, hubid: req.params.dvid }, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -733,7 +733,7 @@ function delsensor(req, res) {
 function putsensor(req, res) {
     //禁止修改传感器类型
     delete req.body.type;
-    SensorModel.findOneAndUpdate({ id: req.params.ssid, dvid: req.params.dvid }, req.body, function (err, ss) {
+    SensorModel.findOneAndUpdate({ id: req.params.ssid, hubid: req.params.dvid }, req.body, function (err, ss) {
         if (err) {
             if (!config.production) {
                 res.send(err);
@@ -747,14 +747,14 @@ function putsensor(req, res) {
     });
 }
 
-router.route('/device/:dvid/sensor/:ssid/photos')
+router.route('/hub/:dvid/node/:ssid/photos')
   .post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "photo") {
         info = imageinfo(req.body);
         if (info.mimeType !== undefined) {
             var imgdp = new ImgdpModel();
-            imgdp.dvid = req.params.dvid;
-            imgdp.ssid = req.params.ssid;
+            imgdp.hubid = req.params.dvid;
+            imgdp.nodeid = req.params.ssid;
             imgdp.img = req.body;
             imgdp.value = { type: info.mimeType, size: req.body.length, width: info.width, height: info.height };
             imgdp.save(function (err, imgs) {
@@ -779,10 +779,10 @@ router.route('/device/:dvid/sensor/:ssid/photos')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/photo/info')
+router.route('/hub/:dvid/node/:ssid/photo/info')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "photo") {
-        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+        ImgdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -811,10 +811,10 @@ router.route('/device/:dvid/sensor/:ssid/photo/info')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/photo/info/:key')
+router.route('/hub/:dvid/node/:ssid/photo/info/:key')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "photo") {
-        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+        ImgdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -828,8 +828,8 @@ router.route('/device/:dvid/sensor/:ssid/photo/info/:key')
                     delete obj._id;
                     delete obj.__v;
                     delete obj.img;
-                    delete obj.dvid;
-                    delete obj.ssid;
+                    delete obj.hubid;
+                    delete obj.nodeid;
                     delete obj.timestamp;
                     //obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                     res.json(obj);
@@ -844,10 +844,10 @@ router.route('/device/:dvid/sensor/:ssid/photo/info/:key')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/photo/content')
+router.route('/hub/:dvid/node/:ssid/photo/content')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "photo") {
-        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+        ImgdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -873,10 +873,10 @@ router.route('/device/:dvid/sensor/:ssid/photo/content')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/photo/content/:key')
+router.route('/hub/:dvid/node/:ssid/photo/content/:key')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "photo") {
-        ImgdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+        ImgdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -903,15 +903,15 @@ router.route('/device/:dvid/sensor/:ssid/photo/content/:key')
 });
 
 //数据结点管理api
-router.route('/device/:dvid/sensor/:ssid/datapoints')
+router.route('/hub/:dvid/node/:ssid/datapoints')
     //Content-Type 必须为application/json
 	.post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "value") {
         if (Array.isArray(req.body)) {
             var dps = [];
             req.body.forEach(function (dp) {
-                dp.dvid = req.params.dvid;
-                dp.ssid = req.params.ssid;
+                dp.hubid = req.params.dvid;
+                dp.nodeid = req.params.ssid;
                 dps.push(dp);
             });
             ValuedpModel.create(dps, function (err, jellybean, snickers) {
@@ -928,8 +928,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
             });
         } else {
             var valuedp = new ValuedpModel(req.body); 		//实例化from json
-            valuedp.dvid = req.params.dvid;
-            valuedp.ssid = req.params.ssid;
+            valuedp.hubid = req.params.dvid;
+            valuedp.nodeid = req.params.ssid;
             valuedp.save(function (err, vdps) {
                 if (err) {
                     if (!config.production) {
@@ -947,8 +947,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
         if (Array.isArray(req.body)) {
             var dps = [];
             req.body.forEach(function (dp) {
-                dp.dvid = req.params.dvid;
-                dp.ssid = req.params.ssid;
+                dp.hubid = req.params.dvid;
+                dp.nodeid = req.params.ssid;
                 dps.push(dp);
             });
             GpsdpModel.create(dps, function (err, jellybean, snickers) {
@@ -965,8 +965,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
             });
         } else {
             var valuedp = new GpsdpModel(req.body); 		//实例化from json
-            valuedp.dvid = req.params.dvid;
-            valuedp.ssid = req.params.ssid;
+            valuedp.hubid = req.params.dvid;
+            valuedp.nodeid = req.params.ssid;
             valuedp.save(function (err, vdps) {
                 if (err) {
                     if (!config.production) {
@@ -984,8 +984,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
         if (Array.isArray(req.body)) {
             var dps = [];
             req.body.forEach(function (dp) {
-                dp.dvid = req.params.dvid;
-                dp.ssid = req.params.ssid;
+                dp.hubid = req.params.dvid;
+                dp.nodeid = req.params.ssid;
                 dps.push(dp);
             });
             GendpModel.create(dps, function (err, jellybean, snickers) {
@@ -1002,8 +1002,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
             });
         } else {
             var valuedp = new GendpModel(req.body); 		//实例化from json
-            valuedp.dvid = req.params.dvid;
-            valuedp.ssid = req.params.ssid;
+            valuedp.hubid = req.params.dvid;
+            valuedp.nodeid = req.params.ssid;
             valuedp.save(function (err, vdps) {
                 if (err) {
                     if (!config.production) {
@@ -1022,10 +1022,10 @@ router.route('/device/:dvid/sensor/:ssid/datapoints')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/datapoint')
+router.route('/hub/:dvid/node/:ssid/datapoint')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "value") {
-        ValuedpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+        ValuedpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1048,7 +1048,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             }
         });
     } else if (req.type === "gps") {
-        GpsdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+        GpsdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1071,7 +1071,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             }
         });
     } else if (req.type === "gen") {
-        GendpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
+        GendpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).sort({ timestamp: -1 }).limit(1).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1093,7 +1093,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             }
         });
     } else if (req.type === "switcher") {
-        SwsdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).exec(function (err, dp) {
+        SwsdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1115,7 +1115,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             }
         });
     } else if (req.type === "gencontrol") {
-        GencontrolModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).exec(function (err, dp) {
+        GencontrolModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1137,7 +1137,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             }
         });
     } else if (req.type === "rangecontrol") {
-        RangecontrolModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid }).exec(function (err, dp) {
+        RangecontrolModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid }).exec(function (err, dp) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1165,7 +1165,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
 
     .put(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.type === "switcher") {
-        SwsdpModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid }, req.body, function (err, ss) {
+        SwsdpModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1176,14 +1176,14 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             } else {
                 res.end();
                 if (config.mqttServer) {
-                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    var message = req.ukey + '/hub/' + req.params.dvid + '/node/' + req.params.ssid + '/datapoint';
                     client.publish(message, JSON.stringify(req.body));
                     //console.log(message);
                 }
             }
         });
     } else if (req.type === "gencontrol") {
-        GencontrolModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid }, req.body, function (err, ss) {
+        GencontrolModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1194,14 +1194,14 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             } else {
                 res.end();
                 if (config.mqttServer) { 
-                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    var message = req.ukey + '/hub/' + req.params.dvid + '/node/' + req.params.ssid + '/datapoint';
                     client.publish(message, JSON.stringify(req.body));
                     //console.log(message);
                 }
             }
         });
     } else if (req.type === "rangecontrol") {
-        RangecontrolModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid }, req.body, function (err, ss) {
+        RangecontrolModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1212,7 +1212,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
             } else {
                 res.end();
                 if (config.mqttServer) {
-                    var message = req.ukey + '/device/' + req.params.dvid + '/sensor/' + req.params.ssid + '/datapoint';
+                    var message = req.ukey + '/hub/' + req.params.dvid + '/node/' + req.params.ssid + '/datapoint';
                     client.publish(message, JSON.stringify(req.body));
                     //console.log(message);
                 }
@@ -1223,7 +1223,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint')
     }
 });
 
-router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
+router.route('/hub/:dvid/node/:ssid/datapoint/:key')
     .post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     if (req.query.method === "put") {
         putdatapoint(req, res);
@@ -1235,7 +1235,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
         deldatapoint(req, res);
     } else {
         if (req.type === "value") {
-            ValuedpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+            ValuedpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1248,8 +1248,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
                         var obj = dp.toObject();
                         delete obj._id;
                         delete obj.__v;
-                        delete obj.dvid;
-                        delete obj.ssid;
+                        delete obj.hubid;
+                        delete obj.nodeid;
                         delete obj.timestamp;
                         //obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                         res.json(obj);
@@ -1259,7 +1259,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
                 }
             });
         } else if (req.type === "gps") {
-            GpsdpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
+            GpsdpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, dp) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1272,8 +1272,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
                         var obj = dp.toObject();
                         delete obj._id;
                         delete obj.__v;
-                        delete obj.dvid;
-                        delete obj.ssid;
+                        delete obj.hubid;
+                        delete obj.nodeid;
                         delete obj.timestamp;
                         //obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                         res.json(obj);
@@ -1283,7 +1283,7 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
                 }
             });
         } else if (req.type === "gen") {
-            GendpModel.findOne({ dvid: req.params.dvid, ssid: req.params.ssid, key: req.params.key }, function (err, dp) {
+            GendpModel.findOne({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, function (err, dp) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1296,8 +1296,8 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
                         var obj = dp.toObject();
                         delete obj._id;
                         delete obj.__v;
-                        delete obj.dvid;
-                        delete obj.ssid;
+                        delete obj.hubid;
+                        delete obj.nodeid;
                         delete obj.key;
                         res.json(obj);
                     } else {
@@ -1323,10 +1323,10 @@ router.route('/device/:dvid/sensor/:ssid/datapoint/:key')
 function deldatapoint(req, res) {
     if (req.type === "value") {
         if (config.mongo.toString().startWith('tingodb')) {
-            ValuedpModel.remove({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, true);
+            ValuedpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, true);
             res.end();
         } else {
-            ValuedpModel.findOneAndRemove({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
+            ValuedpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1341,10 +1341,10 @@ function deldatapoint(req, res) {
         }
     } else if (req.type === "gps") {
         if (config.mongo.toString().startWith('tingodb')) {
-            GpsdpModel.remove({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, true);
+            GpsdpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, true);
             res.end();
         } else {
-            GpsdpModel.findOneAndRemove({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
+            GpsdpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1359,10 +1359,10 @@ function deldatapoint(req, res) {
         }
     } else if (req.type === "gen") {
         if (config.mongo.toString().startWith('tingodb')) {
-            GendpModel.remove({ dvid: req.params.dvid, ssid: req.params.ssid, key: req.params.key }, true);
+            GendpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, true);
             res.end();
         } else {
-            GendpModel.findOneAndRemove({ dvid: req.params.dvid, ssid: req.params.ssid, key: req.params.key }, function (err, ss) {
+            GendpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, function (err, ss) {
                 if (err) {
                     if (!config.production) {
                         res.send(err);
@@ -1383,7 +1383,7 @@ function deldatapoint(req, res) {
 function putdatapoint(req, res) {
     delete req.body.timestamp;
     if (req.type === "value") {
-        ValuedpModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, req.body, function (err, ss) {
+        ValuedpModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1396,7 +1396,7 @@ function putdatapoint(req, res) {
             }
         });
     } else if (req.type === "gps") {
-        GpsdpModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid, timestamp: req.params.key }, req.body, function (err, ss) {
+        GpsdpModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1409,7 +1409,7 @@ function putdatapoint(req, res) {
             }
         });
     } else if (req.type === "gen") {
-        GendpModel.findOneAndUpdate({ dvid: req.params.dvid, ssid: req.params.ssid, key: req.params.key }, req.body, function (err, ss) {
+        GendpModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, req.body, function (err, ss) {
             if (err) {
                 if (!config.production) {
                     res.send(err);
@@ -1427,7 +1427,7 @@ function putdatapoint(req, res) {
 }
 
 //查询数据历史管理api
-router.route('/device/:dvid/sensor/:ssid/json')
+router.route('/hub/:dvid/node/:ssid/json')
 	.get(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
     var start = req.query.start;
     var end = req.query.end;
@@ -1436,7 +1436,7 @@ router.route('/device/:dvid/sensor/:ssid/json')
     if (validator.isInt(page)) {
         if (req.type === "gen") {
             GendpModel.find({
-                dvid: req.params.dvid, ssid: req.params.ssid
+                hubid: req.params.dvid, nodeid: req.params.ssid
             }).sort({ _id: -1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
                 if (err) {
                     if (!config.production) {
@@ -1451,8 +1451,8 @@ router.route('/device/:dvid/sensor/:ssid/json')
                         var obj = dp.toObject();
                         delete obj._id;
                         delete obj.__v;
-                        delete obj.dvid;
-                        delete obj.ssid;
+                        delete obj.hubid;
+                        delete obj.nodeid;
                         rs_dps.push(obj);
                     });
                     res.json(rs_dps);
@@ -1462,7 +1462,7 @@ router.route('/device/:dvid/sensor/:ssid/json')
             if (validator.isInt(itv) && validator.isDate(start) && validator.isDate(end)) {
                 if (req.type === "value") {
                     ValuedpModel.find({
-                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        hubid: req.params.dvid, nodeid: req.params.ssid, 
                         timestamp: { "$gte": start, "$lte": end }
                     }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
                         if (err) {
@@ -1481,16 +1481,16 @@ router.route('/device/:dvid/sensor/:ssid/json')
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     rs_dps.push(obj);
                                 } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     rs_dps.push(obj);
                                 }
@@ -1500,7 +1500,7 @@ router.route('/device/:dvid/sensor/:ssid/json')
                     });
                 } else if (req.type === "gps") {
                     GpsdpModel.find({
-                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        hubid: req.params.dvid, nodeid: req.params.ssid, 
                         timestamp: { "$gte": start, "$lte": end }
                     }).sort({ timestamp: 1 }).skip((page - 1) * 200).limit(200).exec(function (err, dps) {
                         if (err) {
@@ -1519,16 +1519,16 @@ router.route('/device/:dvid/sensor/:ssid/json')
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     rs_dps.push(obj);
                                 } else if ((Math.abs(obj.timestamp - dts) / 1000) >= itv) {
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     rs_dps.push(obj);
                                 }
@@ -1538,7 +1538,7 @@ router.route('/device/:dvid/sensor/:ssid/json')
                     });
                 } else if (req.type === "photo") {
                     ImgdpModel.find({
-                        dvid: req.params.dvid, ssid: req.params.ssid, 
+                        hubid: req.params.dvid, nodeid: req.params.ssid, 
                         timestamp: { "$gte": start, "$lte": end }
                     }).sort({ timestamp: 1 }).skip((page - 1) * 20).limit(20).exec(function (err, dps) {
                         if (err) {
@@ -1557,8 +1557,8 @@ router.route('/device/:dvid/sensor/:ssid/json')
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     obj.img = obj.img.toString('base64');
                                     rs_dps.push(obj);
@@ -1566,8 +1566,8 @@ router.route('/device/:dvid/sensor/:ssid/json')
                                     dts = obj.timestamp;
                                     delete obj._id;
                                     delete obj.__v;
-                                    delete obj.dvid;
-                                    delete obj.ssid;
+                                    delete obj.hubid;
+                                    delete obj.nodeid;
                                     obj.timestamp = obj.timestamp.toISOString().replace(/\..+/, '');
                                     obj.img = obj.img.toString('base64');
                                     rs_dps.push(obj);

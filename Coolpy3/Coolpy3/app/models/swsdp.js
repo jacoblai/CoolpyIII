@@ -3,8 +3,8 @@ var validate = require('mongoose-validator');
 var Schema = mongoose.Schema;
 
 var SwsdpSchema = new Schema({
-    dvid: Number,
-    ssid: Number,
+    hubid: Number,
+    nodeid: Number,
     value: { type: Number, required: true }
 });
 

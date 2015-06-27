@@ -10,8 +10,8 @@ var strLenValidator = [
 ];
 
 var ValuedpSchema = new Schema({
-    dvid: Number,
-    ssid: Number,
+    hubid: Number,
+    nodeid: Number,
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: { type: Number, required: true }
 });

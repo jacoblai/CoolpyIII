@@ -11,9 +11,9 @@ var strLenValidator = [
     })
 ];
 
-var SensorSchema = new Schema({
+var NodeSchema = new Schema({
     id: Number,
-    dvid: Number,
+    hubid: Number,
     type: { type: String, enum: ['value', 'switcher', 'gps', 'gen', 'photo', 'gencontrol', 'rangecontrol'] },
     title: { type: String, required: true, validate: strLenValidator },
     about: { type: String, required: true , validate: strLenValidator },
@@ -29,6 +29,6 @@ var SensorSchema = new Schema({
         }
 });
 
-SensorSchema.plugin(autoIncrement.plugin, { model: 'Sensor', field: 'id', startAt: 1, incrementBy: 1 });
+NodeSchema.plugin(autoIncrement.plugin, { model: 'Node', field: 'id', startAt: 1, incrementBy: 1 });
 
-module.exports = mongoose.model('Sensor', SensorSchema);
+module.exports = mongoose.model('Node', NodeSchema);

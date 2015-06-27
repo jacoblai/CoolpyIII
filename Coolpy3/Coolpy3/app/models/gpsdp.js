@@ -10,8 +10,8 @@ var strLenValidator = [
 ];
 
 var GpsdpSchema = new Schema({
-    dvid: Number,
-    ssid: Number,
+    hubid: Number,
+    nodeid: Number,
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: {
         lat: { type: Number, min: -90, max: 90 },
