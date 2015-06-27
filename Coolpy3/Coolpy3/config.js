@@ -3,7 +3,7 @@
     mongo : 'tingodb://' + __dirname + '/data',//使用本地数据库
     cross : false,//是否接受跨域访问
     production : true,
-    v : '1.0.9',
+    v : '2.0.0',
     maxImageSize: '300kb',//系统默认最大允许上传单张图片大小限制为少于或等于300KB
     openLimit: false,//访问速速限制器开关/默认关闭,开启请设置为 true
     mqttServer: true,//MQTT服务是否开启,默认开启

@@ -31,6 +31,8 @@ db.once('open', function callback() {
     console.log("database open ok!!");
 });
 
+console.log("Coolpy：V" + config.v);
+
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
 
