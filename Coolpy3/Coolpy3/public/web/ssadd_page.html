@@ -153,7 +153,7 @@
             if (self.isValid()) {
                 $.ajax({
                     type: "POST",
-                    url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid') + "/sensors",
+                    url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid') + "/nodes",
                     data: self.getjson(),
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey')),

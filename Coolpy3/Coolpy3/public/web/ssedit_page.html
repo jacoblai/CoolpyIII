@@ -159,7 +159,7 @@
         self.addssSave = function () {
             $.ajax({
                 type: "PUT",
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get("dvid") + "/sensor/" + $.AMUI.utils.cookie.get("ssid"),
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get("dvid") + "/node/" + $.AMUI.utils.cookie.get("ssid"),
                 data: self.getjson(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey')),
@@ -188,7 +188,7 @@
         self.editmode = ko.observable(true);
         self.getdata = function () {
             $.ajax({
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get("dvid") + "/sensor/" + $.AMUI.utils.cookie.get("ssid"),
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get("dvid") + "/node/" + $.AMUI.utils.cookie.get("ssid"),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                 }

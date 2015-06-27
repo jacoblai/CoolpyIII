@@ -90,7 +90,7 @@
         self.editdvSave = function () {
             $.ajax({
                 type: "PUT",
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid'),
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid'),
                 data: self.getjson(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey')),
@@ -118,7 +118,7 @@
 
         self.getdata = function () {
             $.ajax({
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid'),
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid'),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                 }

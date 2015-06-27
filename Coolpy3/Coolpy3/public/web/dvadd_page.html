@@ -87,14 +87,14 @@
             if (self.isValid()) {
                 $.ajax({
                     type: "POST",
-                    url: "/v1.0/devices",
+                    url: "/v1.0/hubs",
                     data: self.getjson(),
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey')),
                         xhr.setRequestHeader("Content-Type", "application/json")
                     },
                     success: function (result) {
-                        if (result.device_id) {
+                        if (result.hub_id) {
                             $("#render").load("web/dvs_page.html");
                         } else {
                             $("#msg").html(result);

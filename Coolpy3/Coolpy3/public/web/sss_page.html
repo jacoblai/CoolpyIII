@@ -68,18 +68,18 @@
         self.loaddata = function () {
             self.sss.removeAll();
             $.ajax({
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get("dvid") + "/sensors",
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get("dvid") + "/nodes",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                 }
             }).done(function (data) {
                 data.forEach(function (dt) {
                     if (dt.type === "photo") {
-                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/photos';
+                        dt.api = '/v1.0/hub/' + dt.hubid + '/node/' + dt.id + '/photos';
                     } else if (dt.type === "switcher" || dt.type === "gencontrol" || dt.type === "rangecontrol") {
-                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/datapoint';
+                        dt.api = '/v1.0/hub/' + dt.hubid + '/node/' + dt.id + '/datapoint';
                     } else {
-                        dt.api = '/v1.0/device/' + dt.dvid + '/sensor/' + dt.id + '/datapoints';
+                        dt.api = '/v1.0/hub/' + dt.hubid + '/node/' + dt.id + '/datapoints';
                     }
                     self.sss.push(dt);
                 })
@@ -102,7 +102,7 @@
                     "确定": function () {
                         $(this).dialog('close');
                         $.ajax({
-                            url: "/v1.0/device/" + $.AMUI.utils.cookie.get("dvid") + "/sensor/" + ss.id,
+                            url: "/v1.0/hub/" + $.AMUI.utils.cookie.get("dvid") + "/node/" + ss.id,
                             type: "DELETE",
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));

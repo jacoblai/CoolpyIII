@@ -112,7 +112,7 @@
             $(".am-dropdown").dropdown('close');
             map.clearOverlays();
             $.ajax({
-                url: "/v1.0/device/" + $.AMUI.utils.cookie.get('dvid') + "/sensor/" + $.AMUI.utils.cookie.get('ssid')
+                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid') + "/node/" + $.AMUI.utils.cookie.get('ssid')
                 + "/json?start=" + self.start().pattern("yyyy-MM-ddTHH:mm:ss")
                 + "&end=" + self.end().pattern("yyyy-MM-ddTHH:mm:ss") + "&interval=" + self.itv() + "&page=1",
                 beforeSend: function (xhr) {

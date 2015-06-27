@@ -58,9 +58,9 @@
                     <span data-bind="text:item.title"></span>
                     <div class="switch am-fr">
                         <input class="cmn-toggle cmn-toggle-round" type="checkbox"
-                               data-bind="attr: {id: 'cb' + item.dvid + '-' + item.id, value : item.title }, checked : $root.sws,
+                               data-bind="attr: {id: 'cb' + item.hubid + '-' + item.id, value : item.title }, checked : $root.sws,
                                  event:{ change: $root.switchChanged}">
-                        <label data-bind="attr: { 'for': 'cb' + item.dvid + '-' + item.id }"></label>
+                        <label data-bind="attr: { 'for': 'cb' + item.hubid + '-' + item.id }"></label>
                     </div>
                     <div class="am-list-item-text" data-bind="text:item.about"></div>
                 </li>
@@ -70,7 +70,7 @@
                     <span class="am-icon-power-off"></span> |
                     <span data-bind="text:item.title"></span>
                     <div class="am-input-group">
-                        <input type="text" class="am-form-field" data-bind="attr: {id: 'gen' + item.dvid + '-' + item.id}">
+                        <input type="text" class="am-form-field" data-bind="attr: {id: 'gen' + item.hubid + '-' + item.id}">
                         <span class="am-input-group-btn">
                             <button class="am-btn am-btn-default" type="button" data-bind="click: $root.postgen">提交</button>
                         </span>
@@ -83,7 +83,7 @@
                     <span class="am-icon-power-off"></span> |
                     <span data-bind="text:item.title"></span>
                     <div class="am-input-group slider">
-                        <input data-bind="attr: { id: 'ran' + item.dvid + '-' + item.id, min: item.range.min, max: item.range.max, step: item.range.step }, event: { change: $root.rangeChanged }" type="range" data-highlight="true">
+                        <input data-bind="attr: { id: 'ran' + item.hubid + '-' + item.id, min: item.range.min, max: item.range.max, step: item.range.step }, event: { change: $root.rangeChanged }" type="range" data-highlight="true">
                     </div>
                     <div class="am-list-item-text" data-bind="text:item.about"></div>
                 </li>
@@ -97,31 +97,31 @@
         var self = this;
 
         self.displaygps = function (ss) {
-            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('dvid', ss.hubid);
             $.AMUI.utils.cookie.set('ssid', ss.id);
             $("#render").load("web/dis_gps_page.html");
         };
 
         self.displayimg = function (ss) {
-            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('dvid', ss.hubid);
             $.AMUI.utils.cookie.set('ssid', ss.id);
             $("#render").load("web/dis_img_page.html");
         };
 
         self.displaygen = function (ss) {
-            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('dvid', ss.hubid);
             $.AMUI.utils.cookie.set('ssid', ss.id);
             $("#render").load("web/dis_gen_page.html");
         };
 
         self.displayval = function (ss) {
-            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('dvid', ss.hubid);
             $.AMUI.utils.cookie.set('ssid', ss.id);
             $("#render").load("web/dis_val_page.html");
         };
 
         self.displayval2 = function (ss) {
-            $.AMUI.utils.cookie.set('dvid', ss.dvid);
+            $.AMUI.utils.cookie.set('dvid', ss.hubid);
             $.AMUI.utils.cookie.set('ssid', ss.id);
             $("#render").load("web/dis_val_list_page.html");
         };
@@ -142,7 +142,7 @@
             var data = { value: dt };
             $.ajax({
                 type: "PUT",
-                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                url: "/v1.0/hub/" + item.hubid + "/node/" + item.id + "/datapoint",
                 data: data,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
@@ -161,11 +161,11 @@
         };
 
         self.postgen = function (item) {
-            var data = { value: document.getElementById('gen' + item.dvid + '-' + item.id).value };
+            var data = { value: document.getElementById('gen' + item.hubid + '-' + item.id).value };
             $.AMUI.progress.start();
             $.ajax({
                 type: "PUT",
-                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                url: "/v1.0/hub/" + item.hubid + "/node/" + item.id + "/datapoint",
                 data: data,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
@@ -190,10 +190,10 @@
         };
 
         self.rangeChanged = function (item) {
-            var data = { value: document.getElementById('ran' + item.dvid + '-' + item.id).value };
+            var data = { value: document.getElementById('ran' + item.hubid + '-' + item.id).value };
             $.ajax({
                 type: "PUT",
-                url: "/v1.0/device/" + item.dvid + "/sensor/" + item.id + "/datapoint",
+                url: "/v1.0/hub/" + item.hubid + "/node/" + item.id + "/datapoint",
                 data: data,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
@@ -217,7 +217,7 @@
         self.dvs = ko.observableArray();
         self.loaddata = function () {
             $.ajax({
-                url: "/v1.0/devices",
+                url: "/v1.0/hubs",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                 }
@@ -227,7 +227,7 @@
                 } else {
                     ko.utils.arrayForEach(data, function (dv) {
                         $.ajax({
-                            url: "/v1.0/device/" + dv.id + "/sensors",
+                            url: "/v1.0/hub/" + dv.id + "/nodes",
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                             }
@@ -237,7 +237,7 @@
                             ko.utils.arrayForEach(ssdata, function (ss) {
                                 if (ss.type === 'switcher') {
                                     $.ajax({
-                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        url: "/v1.0/hub/" + ss.hubid + "/node/" + ss.id + "/datapoint",
                                         beforeSend: function (xhr) {
                                             xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                                         }
@@ -248,22 +248,22 @@
                                     });
                                 } else if (ss.type === "gencontrol") {
                                     $.ajax({
-                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        url: "/v1.0/hub/" + ss.hubid + "/node/" + ss.id + "/datapoint",
                                         beforeSend: function (xhr) {
                                             xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                                         }
                                     }).done(function (gval) {
-                                        var tx = document.getElementById('gen' + ss.dvid + '-' + ss.id)
+                                        var tx = document.getElementById('gen' + ss.hubid + '-' + ss.id)
                                         tx.value = gval.value;
                                     });
                                 } else if (ss.type === "rangecontrol") {
                                     $.ajax({
-                                        url: "/v1.0/device/" + ss.dvid + "/sensor/" + ss.id + "/datapoint",
+                                        url: "/v1.0/hub/" + ss.hubid + "/node/" + ss.id + "/datapoint",
                                         beforeSend: function (xhr) {
                                             xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                                         }
                                     }).done(function (gval) {
-                                        var tx = document.getElementById('ran' + ss.dvid + '-' + ss.id);
+                                        var tx = document.getElementById('ran' + ss.hubid + '-' + ss.id);
                                         tx.value = gval.value;
                                     });
                                 }

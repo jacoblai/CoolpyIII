@@ -45,7 +45,7 @@
         self.dvs = ko.observable();
         self.loaddata = function () {
             $.ajax({
-                url: "/v1.0/devices",
+                url: "/v1.0/hubs",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
                 }
@@ -78,7 +78,7 @@
                     "确定": function () {
                         $(this).dialog('close');
                         $.ajax({
-                            url: "/v1.0/device/" + dv.id,
+                            url: "/v1.0/hub/" + dv.id,
                             type: "DELETE",
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
