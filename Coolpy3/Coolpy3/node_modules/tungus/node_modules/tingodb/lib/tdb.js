@@ -3,8 +3,7 @@ var tcoll = require('./tcoll.js');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-var async = require('async');
-var EventEmitter = require('events').EventEmitter
+var EventEmitter = require('events').EventEmitter;
 
 var mstore = {};
 function tdb(path_, opts, gopts) {
@@ -15,6 +14,8 @@ function tdb(path_, opts, gopts) {
 	this._stype = gopts.memStore?"mem":"fs";
 	if (this._stype=="mem")
 		mstore[path_] = this._mstore = mstore[path_] || {};
+	// mongodb compat variables
+	this.openCalled = false;
 }
 
 tdb.prototype.__proto__ = EventEmitter.prototype;
@@ -26,6 +27,7 @@ tdb.prototype.open = function (options, cb) {
 	// so nothing to open/close... collection will keep going on their own
 	if (cb==null) cb = options;
 	cb = cb || function () {};
+	this.openCalled = true;
 	safe.back(cb,null,this)
 }
 
@@ -34,11 +36,12 @@ tdb.prototype.close = function (forceClose, cb) {
 	if (cb==null) cb = forceClose;
 	cb = cb || function () {};
 	// stop any further operations on current collections
-	async.forEach(_.values(self._cols), function (c, cb) {
+	safe.forEach(_.values(self._cols), function (c, cb) {
 		c._stop(cb)
 	}, safe.sure(cb, function () {
 		// and clean list
 		self._cols = {};
+		this.openCalled = false;
 		safe.back(cb,null,this);
 	}))
 }
@@ -101,7 +104,7 @@ tdb.prototype._collection = function (cname, opts, create, cb) {
 	c.init(this, cname, opts, create, function (err) {
 		if (err) {
 			delete self._cols[cname];
-			cb(err)
+			cb(err);
 		} else
 			cb(null, c);
 	});
@@ -110,31 +113,34 @@ tdb.prototype._collection = function (cname, opts, create, cb) {
 
 tdb.prototype.collectionNames = function (opts, cb) {
 	var self = this;
-	if (cb==null) {
+	if (_.isUndefined(cb)) {
 		cb = opts;
 		opts = {};
 	}
 	if (this._stype=="mem") {
-		cb(null,_(self._mstore).keys().map(function (e) { return opts.namesOnly?e:{name:self._name+"."+e};}).value())
+		cb(null,_(self._mstore).keys().map(function (e) { return opts.namesOnly?e:{name:self._name+"."+e};}).value());
 	} else {
 		fs.readdir(self._path, safe.sure(cb,function(files) {
 			// some collections ca be on disk and some only in memory, we need both
-			files = _.union(files,_.keys(self._cols))
-			cb(null,_(files).map(function (e) { return opts.namesOnly?e:{name:self._name+"."+e};}).value())
-		}))
+			files = _.union(files,_.keys(self._cols));
+			cb(null,_(files)
+				.reject(function (e) {return /^\./.test(e);}) // ignore hidden linux alike files
+				.map(function (e) { return opts.namesOnly?e:{name:self._name+"."+e};})
+				.value());
+		}));
 	}
-}
+};
 
 tdb.prototype.collections = function (cb) {
 	var self = this;
 	self.collectionNames({namesOnly:1},safe.sure(cb, function (names) {
-		async.forEach(names, function (cname, cb) {
-			self.collection(cname, cb)
+		safe.forEach(names, function (cname, cb) {
+			self.collection(cname, cb);
 		},safe.sure(cb, function () {
-			cb(null, _.values(self._cols))
-		}))
-	}))
-}
+			cb(null, _.values(self._cols));
+		}));
+	}));
+};
 
 tdb.prototype.dropCollection = function (cname, cb) {
 	var self = this;
@@ -161,11 +167,20 @@ tdb.prototype.dropCollection = function (cname, cb) {
 tdb.prototype.dropDatabase = function (cb) {
 	var self = this;
 	self.collections(safe.sure(cb, function(collections) {
-		async.forEach(collections, function (c, cb) {
-			self.dropCollection(c.collectionName,cb)
-		},cb)
-	}))
-}
+		safe.forEach(collections, function (c, cb) {
+			self.dropCollection(c.collectionName,cb);
+		},cb);
+	}));
+};
+
+tdb.prototype.compactDatabase = function (cb) {
+	var self = this;
+	self.collections(safe.sure(cb, function(collections) {
+		safe.forEach(collections, function (c, cb) {
+			c.compactCollection(cb);
+		},cb);
+	}));
+};
 
 tdb.prototype.renameCollection = function (on,nn,opts,cb) {
 	if (cb==null) {

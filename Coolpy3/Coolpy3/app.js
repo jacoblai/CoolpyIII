@@ -330,44 +330,23 @@ router.route('/user')
 
     .delete(takeup, isLogin, isAdmin, function (req, res) {
     if (req.query.duid !== "admin") {
-        if (config.mongo.toString().startWith('tingodb')) {
-            UserModel.findOne({ userId: unescape(req.query.duid) }, function (err, u) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
+        UserModel.findOneAndRemove({ userId: unescape(req.query.duid) }, function (err, u) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
                 } else {
-                    if (u !== null) {
-                        delalldvs(u.ukey);
-                        u.remove();
-                        res.end();
-                    } else {
-                        res.json({ Error: "no user" });
-                    }
+                    res.status(404);
+                    res.end();
                 }
-            });
-        } else {
-            UserModel.findOneAndRemove({ userId: unescape(req.query.duid) }, function (err, u) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
+            } else {
+                if (u !== null) {
+                    delalldvs(u.ukey);
+                    res.end();
                 } else {
-                    if (u !== null) {
-                        delalldvs(u.ukey);
-                        res.end();
-                    } else {
-                        res.json({ Error: "no user" });
-                    }
+                    res.json({ Error: "no user" });
                 }
-            });
-        }
+            }
+        });
     }
 });
 
@@ -537,72 +516,37 @@ router.route('/hub/:dvid')
 
     //Content-Type 必须为application/json
 	.put(isAuthenticated, isDvsInUkey, function (req, res) {
-    putdevice(req, res);
+    //禁止修改传感器类型
+    delete req.body.ukey;
+    DeviceModel.findOneAndUpdate({ id: req.params.dvid, ukey: req.ukey }, req.body, function (err, dv) {
+        if (err) {
+            if (!config.production) {
+                res.send(err);
+            } else {
+                res.status(404);
+                res.end();
+            }
+        } else {
+            res.end();
+        }
+    });
 })
 
 	.delete(isAuthenticated, isDvsInUkey, function (req, res) {
-    deldevice(req, res);
+    DeviceModel.findOneAndRemove({ id: req.params.dvid, ukey: req.ukey }, function (err, dv) {
+        if (err) {
+            if (!config.production) {
+                res.send(err);
+            } else {
+                res.status(404);
+                res.end();
+            }
+        } else {
+            delallss(req.params.dvid);
+            res.end();
+        }
+    });
 });
-
-function deldevice(req, res) {
-    if (config.mongo.toString().startWith('tingodb')) {
-        DeviceModel.remove({ id: req.params.dvid, ukey: req.ukey }, true);
-        delallss(req.params.dvid);
-        res.end();
-    } else {
-        DeviceModel.findOneAndRemove({ id: req.params.dvid, ukey: req.ukey }, function (err, dv) {
-            if (err) {
-                if (!config.production) {
-                    res.send(err);
-                } else {
-                    res.status(404);
-                    res.end();
-                }
-            } else {
-                delallss(req.params.dvid);
-                res.end();
-            }
-        });
-    }
-}
-
-function putdevice(req, res) {
-    //禁止修改传感器类型
-    delete req.body.ukey;
-    if (config.mongo.toString().startWith('tingodb')) {
-        DeviceModel.findOne({ id: req.params.dvid, ukey: req.ukey }, function (err, dv) {
-            dv.title = req.body.title;
-            dv.about = req.body.about;
-            dv.tags = req.body.tags;
-            dv.location = req.body.location;
-            dv.save(function (err) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
-                } else {
-                    res.end();
-                }
-            });
-        });
-    } else {
-        DeviceModel.findOneAndUpdate({ id: req.params.dvid, ukey: req.ukey }, req.body, function (err, dv) {
-            if (err) {
-                if (!config.production) {
-                    res.send(err);
-                } else {
-                    res.status(404);
-                    res.end();
-                }
-            } else {
-                res.end();
-            }
-        });
-    }
-}
 
 //传感器管理api
 router.route('/hub/:dvid/nodes')
@@ -703,36 +647,6 @@ router.route('/hub/:dvid/node/:ssid')
 
     //Content-Type 必须为application/json
 	.put(isAuthenticated, isDvsInUkey, isSssInDvs, function (req, res) {
-    putsensor(req, res);
-})
-
-	.delete(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
-    delsensor(req, res);
-});
-
-function delsensor(req, res) {
-    if (config.mongo.toString().startWith('tingodb')) {
-        SensorModel.remove({ id: req.params.ssid, hubid: req.params.dvid }, true);
-        delalldps(req.params.dvid, req.params.ssid);
-        res.end();
-    } else {
-        SensorModel.findOneAndRemove({ id: req.params.ssid, hubid: req.params.dvid }, function (err, ss) {
-            if (err) {
-                if (!config.production) {
-                    res.send(err);
-                } else {
-                    res.status(404);
-                    res.end();
-                }
-            } else {
-                delalldps(req.params.dvid, req.params.ssid);
-                res.end("");
-            }
-        });
-    }
-}
-
-function putsensor(req, res) {
     //禁止修改传感器类型
     delete req.body.type;
     SensorModel.findOneAndUpdate({ id: req.params.ssid, hubid: req.params.dvid }, req.body, function (err, ss) {
@@ -747,7 +661,23 @@ function putsensor(req, res) {
             res.end();
         }
     });
-}
+})
+
+	.delete(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    SensorModel.findOneAndRemove({ id: req.params.ssid, hubid: req.params.dvid }, function (err, ss) {
+        if (err) {
+            if (!config.production) {
+                res.send(err);
+            } else {
+                res.status(404);
+                res.end();
+            }
+        } else {
+            delalldps(req.params.dvid, req.params.ssid);
+            res.end("");
+        }
+    });
+});
 
 router.route('/hub/:dvid/node/:ssid/photos')
   .post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
@@ -1315,74 +1245,6 @@ router.route('/hub/:dvid/node/:ssid/datapoint/:key')
 
     //Content-Type 必须为application/json
 	.put(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
-    putdatapoint(req, res);
-})
-
-	.delete(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
-    deldatapoint(req, res);
-});
-
-function deldatapoint(req, res) {
-    if (req.type === "value") {
-        if (config.mongo.toString().startWith('tingodb')) {
-            ValuedpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, true);
-            res.end();
-        } else {
-            ValuedpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
-                } else {
-                    res.end();
-                }
-            });
-        }
-    } else if (req.type === "gps") {
-        if (config.mongo.toString().startWith('tingodb')) {
-            GpsdpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, true);
-            res.end();
-        } else {
-            GpsdpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
-                } else {
-                    res.end();
-                }
-            });
-        }
-    } else if (req.type === "gen") {
-        if (config.mongo.toString().startWith('tingodb')) {
-            GendpModel.remove({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, true);
-            res.end();
-        } else {
-            GendpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, function (err, ss) {
-                if (err) {
-                    if (!config.production) {
-                        res.send(err);
-                    } else {
-                        res.status(404);
-                        res.end();
-                    }
-                } else {
-                    res.end();
-                }
-            });
-        }
-    } else {
-        res.json({ Error: "no value" });
-    }
-}
-
-function putdatapoint(req, res) {
     delete req.body.timestamp;
     if (req.type === "value") {
         ValuedpModel.findOneAndUpdate({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, req.body, function (err, ss) {
@@ -1426,7 +1288,52 @@ function putdatapoint(req, res) {
     } else {
         res.json({ Error: "no value" });
     }
-}
+})
+
+	.delete(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, function (req, res) {
+    if (req.type === "value") {
+        ValuedpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                res.end();
+            }
+        });
+    } else if (req.type === "gps") {
+        GpsdpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, timestamp: req.params.key }, function (err, ss) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                res.end();
+            }
+        });
+    } else if (req.type === "gen") {
+        GendpModel.findOneAndRemove({ hubid: req.params.dvid, nodeid: req.params.ssid, key: req.params.key }, function (err, ss) {
+            if (err) {
+                if (!config.production) {
+                    res.send(err);
+                } else {
+                    res.status(404);
+                    res.end();
+                }
+            } else {
+                res.end();
+            }
+        });
+    } else {
+        res.json({ Error: "no value" });
+    }
+});
 
 //查询数据历史管理api
 router.route('/hub/:dvid/node/:ssid/json')
