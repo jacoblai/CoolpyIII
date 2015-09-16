@@ -7,7 +7,7 @@
     maxImageSize: '300kb',//系统默认最大允许上传单张图片大小限制为少于或等于300KB
     mqttServer: true,//MQTT服务是否开启,默认开启
     httpPort: 1337,//HTTP服务端口，默认1337
-    httpsPort: 1339,//HTTPS服务端口，默认1339
+    httpsPort: 443,//HTTPS服务端口，默认443
     mqttPort: 1338,//MQTT服务端口，默认1338
     openLimit: true,//访问速速限制器开关/默认关闭,开启请设置为 true
     limitr: {//配置访问速度限制，默认是每秒1次请求
