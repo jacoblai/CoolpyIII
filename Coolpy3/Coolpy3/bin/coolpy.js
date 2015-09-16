@@ -1,3 +1,15 @@
 ﻿var app = require('../app');
-var server = app.listen(1337, '0.0.0.0');
-console.log('Server running at http://127.0.0.1:1337/');
+var ssl = require('../sslLicense');
+var config = require("../config.js");
+
+var http = require('http');
+var https = require('https');
+
+app.set('port', config.httpPort);
+app.set('httpsport', config.httpsPort);
+
+var httpServer = http.createServer(app).listen(app.get('port'));
+var httpsServer = https.createServer(ssl.options, app).listen(app.get('httpsport'));
+
+console.log('Http running at http://*:' + config.httpPort);
+console.log('Https running at http://*:' + config.httpsPort);

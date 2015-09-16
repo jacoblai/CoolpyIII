@@ -48,10 +48,13 @@
     <Compile Include="routes\index.js" />
     <Compile Include="routes\users.js" />
     <Compile Include="bin\www" />
+    <Compile Include="sslLicense.js" />
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
     <Content Include="remark.txt" />
+    <Content Include="ssl\cert.pem" />
+    <Content Include="ssl\key.pem" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\error.jade" />
@@ -62,6 +65,7 @@
     <Folder Include="app\models\" />
     <Folder Include="bin\" />
     <Folder Include="data\" />
+    <Folder Include="ssl\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />
     <Folder Include="public\javascripts\" />

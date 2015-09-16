@@ -1,9 +1,14 @@
 ﻿#!/usr/bin/env node
 var debug = require('debug')('Coolpy3');
 var app = require('../app');
+var ssl = require('../sslLicense');
+var config = require("../config.js");
+
+var http = require('http'),
+    https = require('https');
 
 app.set('port', process.env.PORT || 3000);
+app.set('httpsport', config.httpsPort);
 
-var server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
-});
+var httpServer = http.createServer(app).listen(app.get('port'));
+var httpsServer = https.createServer(ssl.options, app).listen(app.get('httpsport'));
