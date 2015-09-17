@@ -1,4 +1,5 @@
 ﻿var fs = require('fs');
+var config = require("./config.js");
 
 //ssl license
 //var keyPath = 'ssl/key.pem';
@@ -13,7 +14,7 @@
 //};
 var options = {
     pfx: fs.readFileSync('ssl/i.icoolpy.com.pfx'),
-    passphrase: '13750113781Jac'
+    passphrase: config.httpsPwd
 };
 //ssl object
 var ssl = {};

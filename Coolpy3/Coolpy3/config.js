@@ -8,6 +8,7 @@
     mqttServer: true,//MQTT服务是否开启,默认开启
     httpPort: 1337,//HTTP服务端口，默认1337
     httpsPort: 443,//HTTPS服务端口，默认443
+    httpsPwd: '13750113781Jac',//HTTPS证书pfx文件的证书密码
     mqttPort: 1338,//MQTT服务端口，默认1338
     openLimit: true,//访问速速限制器开关/默认关闭,开启请设置为 true
     limitr: {//配置访问速度限制，默认是每秒1次请求
