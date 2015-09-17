@@ -7,5 +7,5 @@ var SwsdpSchema = new Schema({
     nodeid: Number,
     value: { type: Number, required: true }
 });
-
+SwsdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
 module.exports = mongoose.model('Swsdp', SwsdpSchema);

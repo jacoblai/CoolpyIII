@@ -30,5 +30,6 @@ var NodeSchema = new Schema({
 });
 
 NodeSchema.plugin(autoIncrement.plugin, { model: 'Node', field: 'id', startAt: 1, incrementBy: 1 });
+NodeSchema.index({ id: 1, hubid: 1 }, { unique: true });
 
 module.exports = mongoose.model('Node', NodeSchema);

@@ -19,7 +19,7 @@ var AdminSchema = new Schema({
     email: { type: String, required: true , validate: strLenValidator },
     qq: { type: String, required: true , validate: strLenValidator }
 });
-
+AdminSchema.index({ ukey: 1, userId: 1 }, { unique: true });
 AdminSchema.pre('save', function (next) {
     this.ukey = uuid.v4();
     next();

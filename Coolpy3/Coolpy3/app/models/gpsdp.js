@@ -20,7 +20,7 @@ var GpsdpSchema = new Schema({
         offset: { type: String , enum: ['yes', 'no'] }
     }
 });
-
+GpsdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
 GpsdpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();

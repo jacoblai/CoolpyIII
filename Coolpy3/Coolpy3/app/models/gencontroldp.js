@@ -15,5 +15,5 @@ var gencontroldpSchema = new Schema({
     nodeid: Number,
     value: { type: String, required: true, validate: strLenValidator }
 });
-
+gencontroldpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
 module.exports = mongoose.model('gencontroldp', gencontroldpSchema);

@@ -15,7 +15,7 @@ var ValuedpSchema = new Schema({
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: { type: Number, required: true }
 });
-
+ValuedpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
 ValuedpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();

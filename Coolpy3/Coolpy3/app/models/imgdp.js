@@ -24,7 +24,7 @@ var ImgdpSchema = new Schema({
     value: { type: Schema.Types.Mixed, validate: keyValValidator },
     img: { type: Buffer, required: true}
 });
-
+ImgdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
 ImgdpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();

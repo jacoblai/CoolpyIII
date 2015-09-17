@@ -25,5 +25,6 @@ var HubSchema = new Schema({
 });
 
 HubSchema.plugin(autoIncrement.plugin, { model: 'Hub', field: 'id', startAt: 1, incrementBy: 1 });
+HubSchema.index({ id: 1, ukey: 1 }, { unique: true });
 
 module.exports = mongoose.model('Hub', HubSchema);
