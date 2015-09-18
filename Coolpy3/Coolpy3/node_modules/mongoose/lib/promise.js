@@ -13,17 +13,45 @@ var util = require('util');
  *     var query = Candy.find({ bar: true });
  *     var promise = query.exec();
  *
+ * DEPRECATED. Mongoose 5.0 will use native promises by default (or bluebird,
+ * if native promises are not present) but still
+ * support plugging in your own ES6-compatible promises library. Mongoose 5.0
+ * will **not** support mpromise.
+ *
  * @param {Function} fn a function which will be called when the promise is resolved that accepts `fn(err, ...){}` as signature
  * @inherits mpromise https://github.com/aheckmann/mpromise
  * @inherits NodeJS EventEmitter http://nodejs.org/api/events.html#events_class_events_eventemitter
  * @event `err`: Emits when the promise is rejected
  * @event `complete`: Emits when the promise is fulfilled
  * @api public
+ * @deprecated
  */
 
 function Promise (fn) {
   MPromise.call(this, fn);
 }
+
+/**
+ * ES6-style promise constructor wrapper around mpromise.
+ *
+ * @param {Function} resolver
+ * @return {Promise} new promise
+ * @api public
+ */
+Promise.ES6 = function(resolver) {
+  var promise = new Promise();
+
+  // No try/catch for backwards compatibility
+  resolver(
+    function() {
+      promise.complete.apply(promise, arguments);
+    },
+    function(e) {
+      promise.error(e);
+    });
+
+  return promise;
+};
 
 /*!
  * Inherit from mpromise
@@ -92,7 +120,7 @@ Promise.prototype.error = function (err) {
     err = new Error(err);
   }
   return this.reject(err);
-}
+};
 
 /**
  * Resolves this promise to a rejected state if `err` is passed or a fulfilled state if no `err` is passed.
@@ -106,6 +134,7 @@ Promise.prototype.error = function (err) {
  * @param {Error} [err] error or null
  * @param {Object} [val] value to fulfill the promise with
  * @api public
+ * @deprecated
  */
 
 Promise.prototype.resolve = function (err) {
@@ -143,6 +172,7 @@ Promise.prototype.addBack = Promise.prototype.onResolve;
  * @see https://github.com/aheckmann/mpromise#fulfill
  * @param {any} args
  * @api public
+ * @deprecated
  */
 
 /**
@@ -223,6 +253,7 @@ Promise.prototype.addErrback = Promise.prototype.onReject;
  * @param {Function} onFulFill
  * @param {Function} onReject
  * @return {Promise} newPromise
+ * @deprecated
  */
 
 /**
@@ -250,6 +281,7 @@ Promise.prototype.addErrback = Promise.prototype.onReject;
  * @see mpromise#end https://github.com/aheckmann/mpromise#end
  * @method end
  * @memberOf Promise
+ * @deprecated
  */
 
 /*!

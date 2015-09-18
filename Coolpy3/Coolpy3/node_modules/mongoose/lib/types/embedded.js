@@ -1,3 +1,5 @@
+/* eslint no-func-assign: 1 */
+
 /*!
  * Module dependencies.
  */
@@ -81,10 +83,11 @@ EmbeddedDocument.prototype.markModified = function (path) {
  */
 
 EmbeddedDocument.prototype.save = function (fn) {
-  var promise = new Promise(fn);
-  promise.fulfill();
-  return promise;
-}
+  return new Promise.ES6(function(resolve) {
+    fn && fn();
+    resolve();
+  });
+};
 
 /**
  * Removes the subdocument from its parent array.
@@ -133,8 +136,8 @@ function registerRemoveListener (sub) {
     owner.removeListener('remove', emitRemove);
     sub.emit('remove', sub);
     owner = sub = emitRemove = null;
-  };
-};
+  }
+}
 
 /**
  * Override #update method of parent documents.
@@ -143,7 +146,7 @@ function registerRemoveListener (sub) {
 
 EmbeddedDocument.prototype.update = function () {
   throw new Error('The #update method is not available on EmbeddedDocuments');
-}
+};
 
 /**
  * Helper for console.log
@@ -166,7 +169,7 @@ EmbeddedDocument.prototype.inspect = function () {
 
 EmbeddedDocument.prototype.invalidate = function (path, err, val, first) {
   if (!this.__parent) {
-    var msg = 'Unable to invalidate a subdocument that has not been added to an array.'
+    var msg = 'Unable to invalidate a subdocument that has not been added to an array.';
     throw new Error(msg);
   }
 
@@ -218,8 +221,6 @@ EmbeddedDocument.prototype.$markValid = function(path) {
 EmbeddedDocument.prototype.$isValid = function(path) {
   var index = this.__index;
   if (typeof index !== 'undefined') {
-    var parentPath = this.__parentArray._path;
-    var fullPath = [parentPath, index, path].join('.');
 
     return !this.__parent.$__.validationError ||
       !this.__parent.$__.validationError.errors[path];
@@ -247,7 +248,7 @@ EmbeddedDocument.prototype.ownerDocument = function () {
   }
 
   return this.$__.ownerDocument = parent;
-}
+};
 
 /**
  * Returns the full path to this document. If optional `path` is passed, it is appended to the full path.
@@ -281,7 +282,7 @@ EmbeddedDocument.prototype.$__fullPath = function (path) {
   return path
     ? this.$__.fullPath + '.' + path
     : this.$__.fullPath;
-}
+};
 
 /**
  * Returns this sub-documents parent document.
@@ -291,7 +292,7 @@ EmbeddedDocument.prototype.$__fullPath = function (path) {
 
 EmbeddedDocument.prototype.parent = function () {
   return this.__parent;
-}
+};
 
 /**
  * Returns this sub-documents parent array.
@@ -301,7 +302,7 @@ EmbeddedDocument.prototype.parent = function () {
 
 EmbeddedDocument.prototype.parentArray = function () {
   return this.__parentArray;
-}
+};
 
 /*!
  * Module exports.

@@ -183,6 +183,9 @@ function once (fn, scope) {
   return function fnWrapper () {
     if (fnWrapper.hookCalled) return;
     fnWrapper.hookCalled = true;
-    fn.apply(scope, arguments);
+    var ret = fn.apply(scope, arguments);
+    if (ret && ret.then) {
+      ret.then(function() {}, function() {});
+    }
   };
 }

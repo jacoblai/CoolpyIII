@@ -6,7 +6,7 @@ var SchemaType = require('../schematype')
   , CastError = SchemaType.CastError
   , errorMessages = require('../error').messages
   , utils = require('../utils')
-  , Document
+  , Document;
 
 /**
  * Number SchemaType constructor.
@@ -95,7 +95,8 @@ SchemaNumber.prototype.min = function (value, message) {
         return v === null || v >= value;
       },
       message: msg,
-      type: 'min'
+      type: 'min',
+      min: value
     });
   }
 
@@ -148,7 +149,8 @@ SchemaNumber.prototype.max = function (value, message) {
         return v === null || v <= value;
       },
       message: msg,
-      type: 'max'
+      type: 'max',
+      max: value
     });
   }
 
@@ -206,11 +208,11 @@ SchemaNumber.prototype.cast = function (value, doc, init) {
     if (null === val) return val;
     if ('' === val) return null;
     if ('string' == typeof val) val = Number(val);
-    if (val instanceof Number) return val
+    if (val instanceof Number) return val;
     if ('number' == typeof val) return val;
     if (val.toString && !Array.isArray(val) &&
         val.toString() == Number(val)) {
-      return new Number(val)
+      return new Number(val);
     }
   }
 
@@ -222,13 +224,16 @@ SchemaNumber.prototype.cast = function (value, doc, init) {
  */
 
 function handleSingle (val) {
-  return this.cast(val)
+  return this.cast(val);
 }
 
 function handleArray (val) {
   var self = this;
+  if (!Array.isArray(val)) {
+    return [this.cast(val)];
+  }
   return val.map(function (m) {
-    return self.cast(m)
+    return self.cast(m);
   });
 }
 
@@ -262,7 +267,7 @@ SchemaNumber.prototype.castForQuery = function ($conditional, val) {
     return handler.call(this, val);
   } else {
     val = this.cast($conditional);
-    return val == null ? val : val
+    return val == null ? val : val;
   }
 };
 

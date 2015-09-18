@@ -2,7 +2,7 @@
  * Module requirements.
  */
 
-var errorMessages = require('../error').messages
+var errorMessages = require('../error').messages;
 var utils = require('../utils');
 
 var SchemaType = require('../schematype');
@@ -135,7 +135,8 @@ SchemaDate.prototype.min = function (value, message) {
         return val === null || val.valueOf() >= min.valueOf();
       },
       message: msg,
-      type: 'min'
+      type: 'min',
+      min: value
     });
   }
 
@@ -190,7 +191,8 @@ SchemaDate.prototype.max = function (value, message) {
         return val === null || val.valueOf() <= max.valueOf();
       },
       message: msg,
-      type: 'max'
+      type: 'max',
+      max: value
     });
   }
 
@@ -244,6 +246,9 @@ function handleSingle (val) {
 
 function handleArray (val) {
   var self = this;
+  if (!Array.isArray(val)) {
+    return [this.cast(val)];
+  }
   return val.map( function (m) {
     return self.cast(m);
   });

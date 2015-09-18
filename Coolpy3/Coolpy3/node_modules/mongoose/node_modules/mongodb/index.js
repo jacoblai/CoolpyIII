@@ -1,5 +1,6 @@
 // Core module
-var core = require('mongodb-core');
+var core = require('mongodb-core'),
+  Instrumentation = require('./lib/apm');
 
 // Set up the connect function
 var connect = require('./lib/mongo_client').connect;
@@ -35,5 +36,15 @@ connect.Timestamp = core.BSON.Timestamp;
 
 // Add connect method
 connect.connect = connect;
+
+// Instrumentation instance
+var instrumentation = null;
+
+// // Set up the instrumentation method
+// connect.instrument = function(options) {
+//   if(!instrumentation) instrumentation = new Instrumentation(core, options)
+//   return instrumentation;
+// }
+
 // Set our exports to be the connect function
 module.exports = connect;
