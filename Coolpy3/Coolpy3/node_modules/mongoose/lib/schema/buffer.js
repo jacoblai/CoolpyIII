@@ -2,13 +2,14 @@
  * Module dependencies.
  */
 
-var SchemaType = require('../schematype')
-  , CastError = SchemaType.CastError
-  , MongooseBuffer = require('../types').Buffer
-  , Binary = MongooseBuffer.Binary
-  , Query = require('../query')
-  , utils = require('../utils')
-  , Document
+var utils = require('../utils');
+
+var MongooseBuffer = require('../types').Buffer;
+var SchemaType = require('../schematype');
+
+var Binary = MongooseBuffer.Binary;
+var CastError = SchemaType.CastError;
+var Document;
 
 /**
  * Buffer SchemaType constructor
@@ -21,13 +22,21 @@ var SchemaType = require('../schematype')
 
 function SchemaBuffer (key, options) {
   SchemaType.call(this, key, options, 'Buffer');
-};
+}
+
+/**
+ * This schema type's name, to defend against minifiers that mangle
+ * function names.
+ *
+ * @api private
+ */
+SchemaBuffer.schemaName = 'Buffer';
 
 /*!
  * Inherits from SchemaType.
  */
-
-SchemaBuffer.prototype.__proto__ = SchemaType.prototype;
+SchemaBuffer.prototype = Object.create( SchemaType.prototype );
+SchemaBuffer.prototype.constructor = SchemaBuffer;
 
 /**
  * Check required
@@ -91,17 +100,22 @@ SchemaBuffer.prototype.cast = function (value, doc, init) {
     value = value._id;
   }
 
+  if (value && value.isMongooseBuffer) {
+    return value;
+  }
+
   if (Buffer.isBuffer(value)) {
-    if (!(value instanceof MongooseBuffer)) {
+    if (!value || !value.isMongooseBuffer) {
       value = new MongooseBuffer(value, [this.path, doc]);
     }
 
     return value;
   } else if (value instanceof Binary) {
     var ret = new MongooseBuffer(value.value(true), [this.path, doc]);
-    ret.subtype(value.sub_type);
-    // do not override Binary subtypes. users set this
-    // to whatever they want.
+    if (typeof value.sub_type !== 'number') {
+      throw new CastError('buffer', value, this.path);
+    }
+    ret._subtype = value.sub_type;
     return ret;
   }
 
@@ -130,15 +144,16 @@ function handleArray (val) {
   });
 }
 
-SchemaBuffer.prototype.$conditionalHandlers = {
-    '$ne' : handleSingle
-  , '$in' : handleArray
-  , '$nin': handleArray
-  , '$gt' : handleSingle
-  , '$lt' : handleSingle
-  , '$gte': handleSingle
-  , '$lte': handleSingle
-};
+SchemaBuffer.prototype.$conditionalHandlers =
+  utils.options(SchemaType.prototype.$conditionalHandlers, {
+    '$gt' : handleSingle,
+    '$gte': handleSingle,
+    '$in' : handleArray,
+    '$lt' : handleSingle,
+    '$lte': handleSingle,
+    '$ne' : handleSingle,
+    '$nin': handleArray
+  });
 
 /**
  * Casts contents for queries.

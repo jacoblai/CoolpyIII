@@ -133,10 +133,17 @@ describe('mongoose-auto-increment', function () {
       name: String,
       dept: String
     });
+
+    (function() {
+      userSchema.plugin(autoIncrement.plugin);
+    }).should.throw(Error);
+
     userSchema.plugin(autoIncrement.plugin, { model: 'User', incrementBy: 5 });
     var User = connection.model('User', userSchema),
     user1 = new User({ name: 'Charlie', dept: 'Support' }),
     user2 = new User({ name: 'Charlene', dept: 'Marketing' });
+
+
 
     // Act
     async.series({
@@ -158,6 +165,9 @@ describe('mongoose-auto-increment', function () {
     }
 
   });
+
+
+
 
   describe('helper function', function () {
 

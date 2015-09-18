@@ -19,8 +19,8 @@ var keyValValidator = [
 ];
 
 var GendpSchema = new Schema({
-    hubid: Number,
-    nodeid: Number,
+    hubid: { type: Number },
+    nodeid: { type: Number },
     key: { type: String, validate: keyLenValidator, unique: true, required: true },
     value: { type: Schema.Types.Mixed, validate: keyValValidator },
 });

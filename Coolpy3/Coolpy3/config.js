@@ -1,9 +1,9 @@
 ﻿module.exports = {
-    //mongo : 'mongodb://localhost/coolpy',//使用mongodb数据库
-    mongo : 'tingodb://' + __dirname + '/data',//使用本地数据库
+    mongo : 'mongodb://localhost:27017/coolpy',//使用mongodb数据库
+    //mongo : 'tingodb://' + __dirname + '/data',//使用本地数据库
     cross : false,//是否接受跨域访问
     production : true,
-    v : '2.0.1',
+    v : '2.0.2',
     maxImageSize: '300kb',//系统默认最大允许上传单张图片大小限制为少于或等于300KB
     mqttServer: true,//MQTT服务是否开启,默认开启
     httpPort: 1337,//HTTP服务端口，默认1337

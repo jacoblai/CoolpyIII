@@ -18,8 +18,8 @@ var keyValValidator = [
 ];
 
 var ImgdpSchema = new Schema({
-    hubid: Number,
-    nodeid: Number,
+    hubid: { type: Number },
+    nodeid: { type: Number },
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: { type: Schema.Types.Mixed, validate: keyValValidator },
     img: { type: Buffer, required: true}
