@@ -12,8 +12,8 @@ var strLenValidator = [
 ];
 
 var HubSchema = new Schema({
-    id: Number,
-    ukey: { type: String },
+    id: { type: Number , index: true},
+    ukey: { type: String , index: true},
     title: { type: String, required: true, validate: strLenValidator },
     about: { type: String, required: true , validate: strLenValidator},
     tags: { type: [String], required: true },
@@ -25,6 +25,5 @@ var HubSchema = new Schema({
 });
 
 HubSchema.plugin(autoIncrement.plugin, { model: 'Hub', field: 'id', startAt: 1, incrementBy: 1 });
-HubSchema.index({ id: 1, ukey: 1 }, { unique: true });
 
 module.exports = mongoose.model('Hub', HubSchema);

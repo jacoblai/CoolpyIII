@@ -18,13 +18,13 @@ var keyValValidator = [
 ];
 
 var ImgdpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number , index: true},
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: { type: Schema.Types.Mixed, validate: keyValValidator },
     img: { type: Buffer, required: true}
 });
-ImgdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 ImgdpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();

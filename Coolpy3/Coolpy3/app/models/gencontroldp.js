@@ -11,9 +11,9 @@ var strLenValidator = [
 ];
 
 var gencontroldpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number, index: true },
     value: { type: String, required: true, validate: strLenValidator }
 });
-gencontroldpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 module.exports = mongoose.model('gencontroldp', gencontroldpSchema);

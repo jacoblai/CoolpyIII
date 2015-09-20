@@ -12,14 +12,14 @@ var strLenValidator = [
 ];
 
 var AdminSchema = new Schema({
-    ukey: { type: String, unique: true },
+    ukey: { type: String, unique: true, index: true },
     userId: { type: String, required: true, validate: strLenValidator, unique: true },
     pwd: { type: String, required: true , validate: strLenValidator },
     userName: { type: String, required: true , validate: strLenValidator },
     email: { type: String, required: true , validate: strLenValidator },
     qq: { type: String, required: true , validate: strLenValidator }
 });
-AdminSchema.index({ ukey: 1, userId: 1 }, { unique: true });
+
 AdminSchema.pre('save', function (next) {
     this.ukey = uuid.v4();
     next();

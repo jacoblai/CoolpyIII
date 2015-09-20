@@ -19,12 +19,12 @@ var keyValValidator = [
 ];
 
 var GendpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number , index: true},
     key: { type: String, validate: keyLenValidator, unique: true, required: true },
     value: { type: Schema.Types.Mixed, validate: keyValValidator },
 });
-GendpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 //GendpSchema.pre('save', function (next) {
 //    mongoose.models["Gendp"].findOne({ key: this.key }, function (inerr, dp) {
 //        if (dp !== null) {

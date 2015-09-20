@@ -10,17 +10,17 @@ var strLenValidator = [
 ];
 
 var ValuedpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number , index: true},
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: { type: Number, required: true }
 });
-ValuedpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 ValuedpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();
         now.setHours(now.getHours() + 8);
-        now.setMilliseconds(0);
+        //now.setMilliseconds(0);
         this.timestamp = now;
     }
     next();

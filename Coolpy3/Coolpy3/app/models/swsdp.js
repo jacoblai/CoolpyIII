@@ -3,9 +3,9 @@ var validate = require('mongoose-validator');
 var Schema = mongoose.Schema;
 
 var SwsdpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number , index: true},
     value: { type: Number, required: true }
 });
-SwsdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 module.exports = mongoose.model('Swsdp', SwsdpSchema);

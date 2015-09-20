@@ -12,8 +12,8 @@ var strLenValidator = [
 ];
 
 var NodeSchema = new Schema({
-    id: Number,
-    hubid: Number,
+    id: { type: Number , index: true},
+    hubid: { type: Number, index: true },
     type: { type: String, enum: ['value', 'switcher', 'gps', 'gen', 'photo', 'gencontrol', 'rangecontrol'] },
     title: { type: String, required: true, validate: strLenValidator },
     about: { type: String, required: true , validate: strLenValidator },
@@ -30,6 +30,5 @@ var NodeSchema = new Schema({
 });
 
 NodeSchema.plugin(autoIncrement.plugin, { model: 'Node', field: 'id', startAt: 1, incrementBy: 1 });
-NodeSchema.index({ id: 1, hubid: 1 }, { unique: true });
 
 module.exports = mongoose.model('Node', NodeSchema);

@@ -10,8 +10,8 @@ var strLenValidator = [
 ];
 
 var GpsdpSchema = new Schema({
-    hubid: { type: Number },
-    nodeid: { type: Number },
+    hubid: { type: Number , index: true},
+    nodeid: { type: Number , index: true},
     timestamp: { type: Date, validate: strLenValidator, unique: true },
     value: {
         lat: { type: Number, min: -90, max: 90 },
@@ -20,7 +20,7 @@ var GpsdpSchema = new Schema({
         offset: { type: String , enum: ['yes', 'no'] }
     }
 });
-GpsdpSchema.index({ hubid: 1, nodeid: 1 }, { unique: true });
+
 GpsdpSchema.pre('save', function (next) {
     if (!this.timestamp) {
         var now = new Date();
