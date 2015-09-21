@@ -12,8 +12,8 @@ var strLenValidator = [
 ];
 
 var HubSchema = new Schema({
-    id: { type: Number , index: true},
-    ukey: { type: String , index: true},
+    id: Number,
+    ukey: { type: String },
     title: { type: String, required: true, validate: strLenValidator },
     about: { type: String, required: true , validate: strLenValidator},
     tags: { type: [String], required: true },

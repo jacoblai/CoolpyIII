@@ -12,8 +12,8 @@ var strLenValidator = [
 ];
 
 var NodeSchema = new Schema({
-    id: { type: Number , index: true},
-    hubid: { type: Number, index: true },
+    id: Number,
+    hubid: Number,
     type: { type: String, enum: ['value', 'switcher', 'gps', 'gen', 'photo', 'gencontrol', 'rangecontrol'] },
     title: { type: String, required: true, validate: strLenValidator },
     about: { type: String, required: true , validate: strLenValidator },

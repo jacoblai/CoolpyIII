@@ -2,8 +2,8 @@
 var Schema = mongoose.Schema;
 
 var rangecontroldpSchema = new Schema({
-    hubid: { type: Number , index: true},
-    nodeid: { type: Number , index: true},
+    hubid: Number,
+    nodeid: Number,
     value: { type: Number, required: true }
 });
 

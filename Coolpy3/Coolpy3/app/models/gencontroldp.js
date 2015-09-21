@@ -11,8 +11,8 @@ var strLenValidator = [
 ];
 
 var gencontroldpSchema = new Schema({
-    hubid: { type: Number , index: true},
-    nodeid: { type: Number, index: true },
+    hubid: Number,
+    nodeid: Number,
     value: { type: String, required: true, validate: strLenValidator }
 });
 
