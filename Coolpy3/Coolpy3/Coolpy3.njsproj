@@ -156,6 +156,9 @@
     <Content Include="public\assets\js\jquery-ui-1.11.2.custom\jquery-ui.theme.min.css" />
     <Content Include="public\assets\js\switch\css\style.css" />
     <Content Include="public\assets\js\timeline\css\style.css" />
+    <Content Include="public\images\camera.png" />
+    <Content Include="public\images\car.png" />
+    <Content Include="public\images\marker.png" />
     <Content Include="public\index.html" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\web\acpwd_page.html" />

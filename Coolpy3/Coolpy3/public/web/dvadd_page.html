@@ -154,10 +154,11 @@
                     dvvm.local(addComp.city + addComp.district);
                 }
             });
-            var myIcon = new BMap.Icon("../images/marker.png", new BMap.Size(30, 30), {
-                anchor: new BMap.Size(15, 30)
-            });
-            var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat), { icon: myIcon });
+            var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat));
+            //var myIcon = new BMap.Icon("../images/marker.png", new BMap.Size(30, 30), {
+            //    anchor: new BMap.Size(15, 30)
+            //});
+            //var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat), { icon: myIcon });
             map.addOverlay(marker);
         });
     });
