@@ -158,6 +158,7 @@
     <Content Include="public\assets\js\timeline\css\style.css" />
     <Content Include="public\images\camera.png" />
     <Content Include="public\images\car.png" />
+    <Content Include="public\images\car_03.png" />
     <Content Include="public\images\marker.png" />
     <Content Include="public\index.html" />
     <Content Include="public\stylesheets\style.styl" />
