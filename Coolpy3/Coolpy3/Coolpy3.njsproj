@@ -108,6 +108,7 @@
     <Content Include="public\assets\fonts\fontawesome-webfont.svg" />
     <Content Include="public\assets\fonts\fontawesome-webfont.ttf" />
     <Content Include="public\assets\fonts\fontawesome-webfont.woff" />
+    <Content Include="public\assets\fonts\fontawesome-webfont.woff2" />
     <Content Include="public\assets\fonts\FontAwesome.otf" />
     <Content Include="public\assets\i\app-icon72x72%402x.png" />
     <Content Include="public\assets\i\examples\admin-chrome.png" />
