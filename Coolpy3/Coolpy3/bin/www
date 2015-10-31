@@ -1,6 +1,7 @@
 ﻿#!/usr/bin/env node
 var debug = require('debug')('Coolpy3');
 var app = require('../app');
+var wechat = require('../wc');
 var ssl = require('../sslLicense');
 var config = require("../config.js");
 
@@ -9,6 +10,8 @@ var http = require('http'),
 
 app.set('port', process.env.PORT || 3000);
 app.set('httpsport', config.httpsPort);
+wechat.set('wcport', config.wechatPort);
 
 var httpServer = http.createServer(app).listen(app.get('port'));
 var httpsServer = https.createServer(ssl.options, app).listen(app.get('httpsport'));
+var wcServer = http.createServer(wechat).listen(wechat.get('wcport'));

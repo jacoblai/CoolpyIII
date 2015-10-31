@@ -96,6 +96,8 @@
     <Compile Include="routes\users.js" />
     <Compile Include="bin\www" />
     <Compile Include="sslLicense.js" />
+    <Compile Include="wc.js" />
+    <Compile Include="wechat_config.js" />
     <Content Include="package.json" />
     <Content Include="public\assets\css\admin.css" />
     <Content Include="public\assets\css\amazeui.css" />
