@@ -98,6 +98,7 @@
     <Compile Include="sslLicense.js" />
     <Compile Include="wc.js" />
     <Compile Include="wechat_config.js" />
+    <Content Include="menu.json" />
     <Content Include="package.json" />
     <Content Include="public\assets\css\admin.css" />
     <Content Include="public\assets\css\amazeui.css" />

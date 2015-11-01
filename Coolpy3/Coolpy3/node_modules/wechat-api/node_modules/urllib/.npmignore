@@ -1,0 +1,8 @@
+logo.png
+.travis.yml
+examples/
+test/
+Makefile
+.jshintrc
+.jshintignore
+coverage/

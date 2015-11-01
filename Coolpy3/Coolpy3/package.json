@@ -28,6 +28,7 @@
     "stylus": "~0.42.3",
     "tungus": "~0.0.5",
     "validator": "~3.24.0",
-    "wechat": "^2.0.2"
+    "wechat": "^2.0.2",
+    "wechat-api": "^1.19.0"
   }
 }

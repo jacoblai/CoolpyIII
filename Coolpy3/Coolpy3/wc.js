@@ -1,10 +1,28 @@
 ﻿var express = require('express');
 var wechat = require('wechat');
+var WechatAPI = require('wechat-api');
 var rootconfig = require('./config.js');
 var config = require('./wechat_config.js');
 
 var wc = express();
 if (rootconfig.wechatServer) {
+    if (rootconfig.wechatMenuUpdate) {
+        var api = new WechatAPI(config.appid, config.appsecret);
+        api.getAccessToken(function (err, token) {
+            if (err !== null) {
+                console.log("getAccessToken error msg:" + err);
+            }
+        });
+        var menu = JSON.stringify(require('./menu.json'));
+        api.createMenu(menu, function (err, result) {
+            if (result.errcode === 0 & result.errmsg === 'ok') {
+                console.log("update wechat menu ok");
+            } else {
+                console.log("update wechat menu " + result.errmsg);
+            }
+        });
+    }
+
     wc.use(express.query());
     wc.use('/wechat', wechat(config, function (req, res, next) {
         // 微信输入信息都在req.weixin上

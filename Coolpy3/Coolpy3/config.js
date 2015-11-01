@@ -9,6 +9,7 @@
     httpPort: 1337,//HTTP服务端口，默认1337
     httpsPort: 443,//HTTPS服务端口，默认443
     wechatServer: true,//微信功能关开，开启微信功能后默认的微信功能URL为（根地址+/wechat）如：http://icoolpy.com/wechat
+    wechatMenuUpdate: false,//是否更新微信菜单，配置文件位于根目录下的menu.json，此功能配置后须重启生效，只在你修改过菜单配置文件或首次使用微信功能才须要启用一次
     wechatPort: 80,//微信功能端口，默认80，微信目前只支持80端口，路由器运行酷痞由于80端口已被路由器占用所以不能使用此功能
     httpsPwd: '13750113781Jac',//HTTPS证书pfx文件的证书密码
     mqttPort: 1338,//MQTT服务端口，默认1338
