@@ -93,17 +93,6 @@
         //#endregion
 
         self.loaddata = function () {
-            $(".am-dropdown").dropdown('close');
-            //self.cosPoints.removeAll();
-            self.timeline(self.start().pattern("yyyy-MM-ddTHH:mm:ss") + "至" + self.end().pattern("yyyy-MM-ddTHH:mm:ss"));
-            $.ajax({
-                url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid') + "/node/" + $.AMUI.utils.cookie.get('ssid')
-                + "/json?start=" + self.start().pattern("yyyy-MM-ddTHH:mm:ss")
-                + "&end=" + self.end().pattern("yyyy-MM-ddTHH:mm:ss") + "&interval=" + self.itv() + "&page=1",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
-                }
-            }).done(function (data) {
                 // 路径配置
                 require.config({
                     paths: {
@@ -117,97 +106,99 @@
                     'echarts/chart/bar'
                    ],
                    function (ec) {
+                       var effect = ['spin', 'bar', 'ring', 'whirling', 'dynamicLine', 'bubble'];
                        var myChart = ec.init(document.getElementById('chart1'));
-                       option = {
-                           title: {
-                               text: '数据传感器[HubId:' + $.AMUI.utils.cookie.get('dvid') + ",NodeId:"
-                                   + $.AMUI.utils.cookie.get('ssid') +"]"
-                           },
-                           tooltip: {
-                               trigger: 'item',
-                               formatter: function (params) {
-                                   return  "数据结点" + "<br/>key:" + params.name + '<br/>value:'
-                                          + params.value;
-                               }
-                           },
-                           toolbox: {
-                               show: true,
-                               feature: {
-                                   mark: { show: true },
-                                   dataZoom: { show: true },
-                                   dataView: { show: true },
-                                   magicType: { show: true, type: ['line', 'bar'] },
-                                   restore: { show: true },
-                                   saveAsImage: { show: true }
-                               }
-                           },
-                           dataZoom: {
-                               show: true,
-                               realtime: true,
-                               y: 36,
-                               height: 20,
-                               start: 10,
-                               end: 80
-                           },
-                           xAxis: [
-                               {
-                                   type: 'category',
-                                   boundaryGap: false,
-                                   data: function () {
-                                       var list = [];
-                                       ko.utils.arrayForEach(data, function (val) {
-                                           list.push(val.timestamp);
-                                       });
-                                       return list;
-                                   }()
-                               }
-                           ],
-                           yAxis: [
-                               {
-                                   type: 'value'
-                               }
-                           ],
-                           series: [
-                               {
-                                   name: '数据结点集',
-                                   type: 'line',
-                                   data: function () {
-                                       var list = [];
-                                       ko.utils.arrayForEach(data, function (val) {
-                                           list.push(val.value);
-                                       });
-                                       return list;
-                                   }()
-                               }
-                           ],
-                           calculable: false
-                       };
-                      
-                       myChart.setOption(option);
+                       myChart.showLoading({
+                           text: "加载中.......",
+                           effect: effect[3],
+                           textStyle: {
+                               fontSize: 20
+                           }
+                       });
+                       $(".am-dropdown").dropdown('close');
+                       //self.cosPoints.removeAll();
+                       self.timeline(self.start().pattern("yyyy-MM-ddTHH:mm:ss") + "至" + self.end().pattern("yyyy-MM-ddTHH:mm:ss"));
+                       $.ajax({
+                           url: "/v1.0/hub/" + $.AMUI.utils.cookie.get('dvid') + "/node/" + $.AMUI.utils.cookie.get('ssid')
+                           + "/json?start=" + self.start().pattern("yyyy-MM-ddTHH:mm:ss")
+                           + "&end=" + self.end().pattern("yyyy-MM-ddTHH:mm:ss") + "&interval=" + self.itv() + "&page=1",
+                           beforeSend: function (xhr) {
+                               xhr.setRequestHeader("U-ApiKey", $.AMUI.utils.cookie.get('ukey'));
+                           }
+                       }).done(function (data) {
+                           option = {
+                               title: {
+                                   text: '数据传感器[HubId:' + $.AMUI.utils.cookie.get('dvid') + ",NodeId:"
+                                       + $.AMUI.utils.cookie.get('ssid') + "]"
+                               },
+                               tooltip: {
+                                   trigger: 'item',
+                                   formatter: function (params) {
+                                       return "数据结点" + "<br/>key:" + params.name + '<br/>value:'
+                                              + params.value;
+                                   }
+                               },
+                               toolbox: {
+                                   show: true,
+                                   feature: {
+                                       mark: { show: true },
+                                       dataZoom: { show: true },
+                                       dataView: { show: true },
+                                       magicType: { show: true, type: ['line', 'bar'] },
+                                       restore: { show: true },
+                                       saveAsImage: { show: true }
+                                   }
+                               },
+                               dataZoom: {
+                                   show: true,
+                                   realtime: true,
+                                   y: 36,
+                                   height: 20,
+                                   start: 10,
+                                   end: 80
+                               },
+                               xAxis: [
+                                   {
+                                       type: 'category',
+                                       boundaryGap: false,
+                                       data: function () {
+                                           var list = [];
+                                           ko.utils.arrayForEach(data, function (val) {
+                                               list.push(val.timestamp);
+                                           });
+                                           return list;
+                                       }()
+                                   }
+                               ],
+                               yAxis: [
+                                   {
+                                       type: 'value'
+                                   }
+                               ],
+                               series: [
+                                   {
+                                       name: '数据结点集',
+                                       type: 'line',
+                                       data: function () {
+                                           var list = [];
+                                           ko.utils.arrayForEach(data, function (val) {
+                                               list.push(val.value);
+                                           });
+                                           return list;
+                                       }()
+                                   }
+                               ],
+                               calculable: false
+                           };
+                           myChart.hideLoading();
+                           myChart.setOption(option);
+                       });
 
                        $(window).resize(function () {
                            myChart.resize();
                        });
                    });
-
-                //if (self.cosPoints().length > 0) {
-                //    $.jqplot('chart1', [self.cosPoints()], {
-                //        title: '设备编号：' + $.AMUI.utils.cookie.get('dvid') + '，传感器编号：' + $.AMUI.utils.cookie.get('ssid'),
-                //        seriesDefaults: {
-                //            showMarker: false,
-                //            pointLabels: { show: true }
-                //        }
-                //    }).replot();
-                //} else {
-                //    $.jqplot('chart1', [[0, 0]], {
-                //        title: '设备编号：' + $.AMUI.utils.cookie.get('dvid') + '，传感器编号：' + $.AMUI.utils.cookie.get('ssid'),
-                //        seriesDefaults: {
-                //            showMarker: false,
-                //            pointLabels: { show: true }
-                //        }
-                //    }).replot();
-                //}
-            });
+           
         };
     };
     var ctvm = new centervm();
