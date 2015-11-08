@@ -162,7 +162,7 @@ if (rootconfig.wechatServer) {
                 } else if (message.EventKey === "V1_LIST_DVS") {
                     res.reply([
                         {
-                            title: '设备及控制中心，马上进入设备控制中心！',
+                            title: '我的设备，马上进入设备控制中心！',
                             description: '此功能将让你操作控制器及查看传感器数据记录喔。',
                             picurl: 'http://icoolpy.com/iot.jpeg',
                             url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=center_page'

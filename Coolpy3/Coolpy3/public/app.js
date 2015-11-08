@@ -73,8 +73,8 @@
         self.shownav = ko.observable(false);
         self.showuinfo = ko.observable(false);
         self.showback = ko.observable(false);
-        self.uid = ko.observable("admin");
-        self.pwd = ko.observable("admin");
+        self.uid = ko.observable("");
+        self.pwd = ko.observable("");
         
         self.rembme = ko.observable(false);
         if (typeof (Storage) !== "undefined") {
