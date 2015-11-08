@@ -135,7 +135,7 @@ if (rootconfig.wechatServer) {
                 } else if (message.EventKey === "V3_QS") {
                     res.reply([
                         {
-                            title: '点击我，进入酷痞快速指南吧！',
+                            title: '快速指南，进入酷痞快速指南吧！',
                             description: '此功能将告诉你酷痞的基础用法和概念喔。',
                             picurl: 'http://icoolpy.com/iot.jpeg',
                             url: rootconfig.rootUrl + '/index.html?wcid='+ message.FromUserName +'&nav=nav_page'
@@ -144,7 +144,7 @@ if (rootconfig.wechatServer) {
                 } else if (message.EventKey === "V2_ADD_DV") {
                     res.reply([
                         {
-                            title: '点击我，马上就可以添加设备了！',
+                            title: '添加设备，马上就可以添加设备了！',
                             description: '此功能将让你增加一个Hub设备喔。',
                             picurl: 'http://icoolpy.com/iot.jpeg',
                             url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=dvadd_page'
@@ -153,7 +153,7 @@ if (rootconfig.wechatServer) {
                 } else if (message.EventKey === "V2_LIST_DV") {
                     res.reply([
                         {
-                            title: '点击我，马上就可以管理设备了！',
+                            title: '管理设备，马上就可以管理设备了！',
                             description: '此功能将让你罗列属于你的Hub设备喔。',
                             picurl: 'http://icoolpy.com/iot.jpeg',
                             url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=dvs_page'
@@ -162,7 +162,7 @@ if (rootconfig.wechatServer) {
                 } else if (message.EventKey === "V1_LIST_DVS") {
                     res.reply([
                         {
-                            title: '点击我，马上进入设备控制中心！',
+                            title: '设备及控制中心，马上进入设备控制中心！',
                             description: '此功能将让你操作控制器及查看传感器数据记录喔。',
                             picurl: 'http://icoolpy.com/iot.jpeg',
                             url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=center_page'
