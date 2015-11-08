@@ -72,6 +72,12 @@
                             <span class="am-navbar-label">清 空</span>
                         </a>
                     </li>
+                    <li>
+                        <a data-bind="click: back">
+                            <span class="am-icon-undo"></span>
+                            <span class="am-navbar-label">返 回</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -199,6 +205,11 @@
             self.min(0);
             self.max(255);
             self.step(5);
+        };
+
+        self.back = function () {
+            $.AMUI.utils.cookie.set('dvid', null);
+            $("#render").load("web/dvs_page.html");
         };
 
     };

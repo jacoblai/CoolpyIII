@@ -23,7 +23,7 @@
     <![endif]-->
 
 </head>
-<body id="mainModel">
+<body id="mainModel" class="am-hide">
     <!-- Header -->
     <header data-am-widget="header" class="am-header am-header-default">
         <h1 class="am-header-title">
@@ -85,8 +85,13 @@
                             <li class="">
                                 <a data-bind="click: link_alldvs" href="##">管理设备</a>
                             </li>
+                        </ul>
+                    </li>
+                    <li class="am-parent">
+                        <a href="##">微信</a>
+                        <ul class="am-menu-sub am-collapse  am-avg-sm-2 ">
                             <li class="">
-                                <a href="##">管理动作</a>
+                                <a data-bind="click:bt_upmenu" href="##">初始化微信功能</a>
                             </li>
                         </ul>
                     </li>

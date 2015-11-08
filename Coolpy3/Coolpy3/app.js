@@ -8,6 +8,8 @@ var mqtt = require('mqtt');
 var validator = require('validator');
 var imageinfo = require('./app/func/imageInfo.js');
 var config = require('./config.js');
+var WechatAPI = require('wechat-api');
+var wcConfig = require('./wechat_config.js');
 String.prototype.startWith = function (str) {
     var reg = new RegExp("^" + str);
     return reg.test(this);
@@ -277,6 +279,28 @@ var router = express.Router();
 // apply the routes to our application
 //app.use('/', router);
 //#endregion
+
+router.route('/user/wc/updatemenu')
+.get(takeup, isAdmin, function (req, res) {
+    if (config.wechatServer) {
+        var api = new WechatAPI(wcConfig.appid, wcConfig.appsecret);
+        api.getAccessToken(function (err, token) {
+            if (err !== null) {
+                res.send("getAccessToken error msg:" + err);
+            } else {
+                var menu = JSON.stringify(require('./menu.json'));
+                api.createMenu(menu, function (err, result) {
+                    if (result.errcode === 0 & result.errmsg === 'ok') {
+                        res.end("");
+                    } else {
+                        res.status(404);
+                        res.end("update wechat menu " + result.errmsg);
+                    }
+                });
+            }
+        });
+    }    ;
+});
 
 //账号管理api
 router.route('/user')

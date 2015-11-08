@@ -4,60 +4,187 @@ var WechatAPI = require('wechat-api');
 var rootconfig = require('./config.js');
 var config = require('./wechat_config.js');
 
+var DeviceModel = require('./app/models/device.js');
+var SensorModel = require('./app/models/sensor.js');
+var ValuedpModel = require('./app/models/valuedp.js');
+var GpsdpModel = require('./app/models/gpsdp.js');
+var GendpModel = require('./app/models/gendp.js');
+var SwsdpModel = require('./app/models/swsdp.js');
+var ImgdpModel = require('./app/models/imgdp.js');
+var GencontrolModel = require('./app/models/gencontroldp.js');
+var RangecontrolModel = require('./app/models/rangecontroldp.js');
+var UserModel = require('./app/models/admin.js');
+
+function delalldvs(key) {
+    DeviceModel.find({ ukey: key }, function (err, docs) {
+        docs.forEach(function (item) {
+            delallss(item.id);
+        })
+    });
+    DeviceModel.remove({ ukey: key }, true);
+}
+
+function delallss(did) {
+    SensorModel.find({ hubid: did }, function (err, docs) {
+        docs.forEach(function (item) {
+            delalldps(item.hubid, item.id);
+        })
+    });
+    SensorModel.remove({ hubid: did }, true);
+}
+
+function delalldps(dvid, ssid) {
+    delallvaldps(dvid, ssid);
+    delallgendps(dvid, ssid);
+    delallgpsdps(dvid, ssid);
+    delallswsdps(dvid, ssid);
+    delallgencontroldps(dvid, ssid);
+    delallrangecontroldps(dvid, ssid);
+}
+
+function delallvaldps(dvid, ssid) {
+    ValuedpModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
+function delallgendps(dvid, ssid) {
+    GendpModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
+function delallgpsdps(dvid, ssid) {
+    GpsdpModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
+function delallswsdps(dvid, ssid) {
+    SwsdpModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
+function delallgencontroldps(dvid, ssid) {
+    GencontrolModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
+function delallrangecontroldps(dvid, ssid) {
+    RangecontrolModel.remove({ hubid: dvid, nodeid: ssid }, true);
+}
+
 var wc = express();
 if (rootconfig.wechatServer) {
-    if (rootconfig.wechatMenuUpdate) {
-        var api = new WechatAPI(config.appid, config.appsecret);
-        api.getAccessToken(function (err, token) {
-            if (err !== null) {
-                console.log("getAccessToken error msg:" + err);
-            }
-        });
-        var menu = JSON.stringify(require('./menu.json'));
-        api.createMenu(menu, function (err, result) {
-            if (result.errcode === 0 & result.errmsg === 'ok') {
-                console.log("update wechat menu ok");
-            } else {
-                console.log("update wechat menu " + result.errmsg);
-            }
-        });
-    }
-
     wc.use(express.query());
     wc.use('/wechat', wechat(config, function (req, res, next) {
-        // 微信输入信息都在req.weixin上
         var message = req.weixin;
-        if (message.FromUserName === 'oIYpBwq3giUAImcvVokNCpT7isUQ') {
-            // 回复屌丝(普通回复)
-            res.reply('hehe');
-        } else if (message.FromUserName === 'text') {
-            //你也可以这样回复text类型的信息
+        if (message.MsgType === 'event') {
+            if (message.Event === 'subscribe') {
+                UserModel.findOne({ userId: message.FromUserName }, function (err, u) {
+                    if (err) {
+                        console.log('findWechatUserNameError');
+                    } else {
+                        if (u !== null) {
+                            console.log('wechatUserNameExt:' + message.FromUserName);
+                        } else {
+                            var user = new UserModel();
+                            user.userId = message.FromUserName;
+                            user.pwd = message.FromUserName;
+                            user.userName = "WechatUser";
+                            user.email = "WechatUser";
+                            user.qq = "WechatUser";
+                            user.save();
+                            res.reply([
+                                {
+                                    title: '恭喜你已经成功注册到酷痞物联网平台！',
+                                    description: '现在你即可以体验你专属的物联网中心了！',
+                                    picurl: 'http://icoolpy.com/iot.jpeg',
+                                    url: ''
+                                }, 
+                                {
+                                    title: '恭喜你已经成功注册到酷痞物联网平台！',
+                                    description: '现在你即可以体验你专属的物联网中心了！',
+                                    picurl: 'http://icoolpy.com/iot.jpeg',
+                                    url: ''
+                                }
+                            ]);
+                        }
+                    }
+                });
+            } else if (message.Event === 'unsubscribe') {
+                UserModel.findOneAndRemove({ userId: message.FromUserName }, function (err, u) {
+                    if (err) {
+                        console.log('findWechatUserNameError');
+                    } else {
+                        if (u !== null) {
+                            delalldvs(u.ukey);
+                        } else {
+                            console.log('wechatUserNameNotExt:' + message.FromUserName);
+                        }
+                    }
+                });
+            } else if (message.Event === 'CLICK') {
+                if (message.EventKey === "V1_LIST_UKEY") {
+                    UserModel.findOne({ userId: message.FromUserName }, function (err, u) {
+                        if (err) {
+                            console.log('findWechatUserNameError');
+                        } else {
+                            if (u !== null) {
+                                res.reply({
+                                    content: u.ukey,
+                                    type: 'text'
+                                });
+                            } else {
+                                res.reply('你还没有注册到本平台！');
+                            }
+                        }
+                    });
+                } else if (message.EventKey === "V3_QS") {
+                    res.reply([
+                        {
+                            title: '点击我，进入酷痞快速指南吧！',
+                            description: '此功能将告诉你酷痞的基础用法和概念喔。',
+                            picurl: 'http://icoolpy.com/iot.jpeg',
+                            url: rootconfig.rootUrl + '/index.html?wcid='+ message.FromUserName +'&nav=nav_page'
+                        }
+                    ]);
+                } else if (message.EventKey === "V2_ADD_DV") {
+                    res.reply([
+                        {
+                            title: '点击我，马上就可以添加设备了！',
+                            description: '此功能将让你增加一个Hub设备喔。',
+                            picurl: 'http://icoolpy.com/iot.jpeg',
+                            url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=dvadd_page'
+                        }
+                    ]);
+                } else if (message.EventKey === "V2_LIST_DV") {
+                    res.reply([
+                        {
+                            title: '点击我，马上就可以管理设备了！',
+                            description: '此功能将让你罗列属于你的Hub设备喔。',
+                            picurl: 'http://icoolpy.com/iot.jpeg',
+                            url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=dvs_page'
+                        }
+                    ]);
+                } else if (message.EventKey === "V1_LIST_DVS") {
+                    res.reply([
+                        {
+                            title: '点击我，马上进入设备控制中心！',
+                            description: '此功能将让你操作控制器及查看传感器数据记录喔。',
+                            picurl: 'http://icoolpy.com/iot.jpeg',
+                            url: rootconfig.rootUrl + '/index.html?wcid=' + message.FromUserName + '&nav=center_page'
+                        }
+                    ]);
+                } else {
+                    res.reply({
+                        content: 'Sorry!!我还没有此功能！',
+                        type: 'text'
+                    });
+                }
+            } else {
+                res.reply({
+                    content: 'Sorry!!我还没有此功能！',
+                    type: 'text'
+                });
+            }
+        } else {
             res.reply({
-                content: 'text object',
+                content: 'Sorry!!我还没有此功能！',
                 type: 'text'
             });
-        } else if (message.FromUserName === 'hehe') {
-            // 回复一段音乐
-            res.reply({
-                type: "music",
-                content: {
-                    title: "来段音乐吧",
-                    description: "一无所有",
-                    musicUrl: "http://mp3.com/xx.mp3",
-                    hqMusicUrl: "http://mp3.com/xx.mp3",
-                    thumbMediaId: "thisThumbMediaId"
-                }
-            });
-        } else {
-            // 回复高富帅(图文回复)
-            res.reply([
-                {
-                    title: '你来我家接我吧',
-                    description: '这是女神与高富帅之间的对话',
-                    picurl: 'http://nodeapi.cloudfoundry.com/qrcode.jpg',
-                    url: 'http://nodeapi.cloudfoundry.com/'
-                }
-            ]);
         }
     }));
 }

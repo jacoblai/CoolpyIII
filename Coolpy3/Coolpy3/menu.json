@@ -1,72 +1,52 @@
 ﻿{
   "button":[
-    {
-      "name":"控制器",
-	  "sub_button":[
-	    {
-          "type":"click",
-          "name":"开关控制器",
-          "key":"V1_CT_SW"
-        },
+      {
+      "name":"我的设备",
+      "sub_button":[
 		{
           "type":"click",
-          "name":"数值范围控制器",
-          "key":"V1_CT_VAL"
+          "name":"我的设备",
+          "key":"V1_LIST_DVS"
         },
         {
           "type":"click",
-          "name":"泛型控制器",
-          "key":"V1_CT_GEN"
+          "name":"我的密钥",
+          "key":"V1_LIST_UKEY"
         }
       ]
     },
     {
-     "name":"传感器",
-	    "sub_button":[
-	    {
-          "type":"click",
-          "name":"数值传感器",
-          "key":"V2_SS_VAL"
-        },
+      "name":"设备中心",
+      "sub_button":[
 		{
           "type":"click",
-          "name":"GPS传感器",
-          "key":"V2_SS_GPS"
+          "name":"添加设备",
+          "key":"V2_ADD_DV"
         },
         {
           "type":"click",
-          "name":"泛型传感器",
-          "key":"V2_SS_GEN"
-        },
-        {
-          "type":"click",
-          "name":"图像传感器",
-          "key":"V2_SS_IMG"
+          "name":"设备管理",
+          "key":"V2_LIST_DV"
         }
       ]
     },
     {
       "name":"物联中心",
       "sub_button":[
-	    {
+	  	{
+          "type":"click",
+          "name":"新手指南",
+          "key":"V3_QS"
+        },
+        {
           "type":"view",
-          "name":"控制面板",
-          "url":"http://i.icoolpy.com"
+          "name":"API说明文档",
+          "url":"http://icoolpy.com/docs.html"
         },
 		{
-          "type":"click",
-          "name":"指令说明",
-          "key":"V3_CMD_LIST"
-        },
-        {
-          "type":"click",
-          "name":"帮助",
-          "key":"V3_HELP"
-        },
-        {
-          "type":"click",
-          "name":"联系我们",
-          "key":"V3_CON"
+          "type":"view",
+          "name":"酷痞官网",
+          "url":"http://icoolpy.com"
         }
       ]
     }
