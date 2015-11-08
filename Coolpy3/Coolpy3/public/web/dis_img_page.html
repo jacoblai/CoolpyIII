@@ -27,6 +27,16 @@
             </section> <!-- cd-timeline -->
         </div>
     </div>
+    <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+        <ul class="am-navbar-nav am-cf am-avg-sm-4">
+            <li>
+                <a data-bind="click: back">
+                    <span class="am-icon-undo"></span>
+                    <span class="am-navbar-label">返 回</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 <link href="../assets/js/timeline/css/style.css" rel="stylesheet" />
 <script src="../assets/js/timeline/js/timeline.js"></script>
@@ -60,6 +70,9 @@
             }).fail(function (xhr) {
                 //var err = eval("(" + data.responseText + ")");
             });
+        };
+        self.back = function () {
+            $("#render").load("web/center_page.html");
         };
     };
     var ctvm = new centervm();

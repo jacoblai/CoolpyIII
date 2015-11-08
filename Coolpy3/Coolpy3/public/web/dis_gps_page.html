@@ -7,10 +7,10 @@
 <script src="../assets/js/amazeui.min.js"></script>
 <script src="http://api.map.baidu.com/api?v=2.0&ak=yI04w1qo60jCC8Qmy9a20w8G"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
-<div class="am-panel am-panel-default">
+<div class="am-panel am-panel-default" id="gpsModel">
     <div class="am-panel-hd"></div>
     <div class="am-panel-bd">
-        <div id="gpsModel" class="am-avg-sm-2">
+        <div class="am-avg-sm-2">
             <div class="am-g">
                 <div class="am-fl">
                     <span data-bind="text:label"></span>
@@ -29,14 +29,26 @@
                             <li><a data-bind="click: onemonth">最近1月</a></li>
                         </ul>
                     </div>
-                    <a class="am-btn am-btn-success am-dropdown-toggle" data-am-dropdown-toggle data-bind="click: replay">
-                        <span class="am-icon-caret-square-o-right"></span>
-                        <span class="am-navbar-label">回放</span>
-                    </a>
                 </div>
             </div>
         </div>
         <div id="map_canvas"></div>
+        <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+            <ul class="am-navbar-nav am-cf am-avg-sm-4">
+                <li>
+                    <a data-bind="click: replay">
+                        <span class="am-icon-undo"></span>
+                        <span class="am-navbar-label">回放轨迹</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-bind="click: back">
+                        <span class="am-icon-undo"></span>
+                        <span class="am-navbar-label">返 回</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
@@ -163,7 +175,10 @@
                 //    lushu.pause();
                 //}
             };
-        }
+        };
+        self.back = function () {
+            $("#render").load("web/center_page.html");
+        };
     };
     var ctvm = new centervm();
     //这里要等系统web.config中的系统设备传感器操作最快可重复访问间隔时间值，单位（秒）系统默认0.1秒

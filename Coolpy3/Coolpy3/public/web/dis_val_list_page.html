@@ -41,6 +41,16 @@
             </ul>
         </div>
     </div>
+    <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+        <ul class="am-navbar-nav am-cf am-avg-sm-4">
+            <li>
+                <a data-bind="click: back">
+                    <span class="am-icon-undo"></span>
+                    <span class="am-navbar-label">返 回</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 <script src="../assets/js/amazeui.min.js"></script>
 <script type="text/javascript">
@@ -110,6 +120,10 @@
             }).done(function (data) {
                 self.dps(data);
             });
+        };
+
+        self.back = function () {
+            $("#render").load("web/center_page.html");
         };
     };
     var ctvm = new centervm();

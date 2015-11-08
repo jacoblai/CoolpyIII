@@ -1,8 +1,8 @@
-﻿<div class="am-panel am-panel-default">
+﻿<div class="am-panel am-panel-default" id="valsModel">
     <div class="am-panel-hd"></div>
     <div class="am-panel-bd">
         <div id="chart1" class="am-g am-g-fixed" style="min-height: 350px; "></div>
-        <div id="valsModel" class="am-avg-sm-2">
+        <div class="am-avg-sm-2">
             <div class="am-g">
                 <!--<div class="am-fl">
                     <span data-bind="text:timeline"></span>
@@ -27,6 +27,16 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default">
+        <ul class="am-navbar-nav am-cf am-avg-sm-4">
+            <li>
+                <a data-bind="click: back">
+                    <span class="am-icon-undo"></span>
+                    <span class="am-navbar-label">返 回</span>
+                </a>
+            </li>
+        </ul>
     </div>
 </div>
 <script src="../assets/js/amazeui.min.js"></script>
@@ -91,6 +101,10 @@
             self.loaddata();
         };
         //#endregion
+
+        self.back = function () {
+            $("#render").load("web/center_page.html");
+        };
 
         self.loaddata = function () {
                 // 路径配置
