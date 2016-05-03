@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mqtt = require('mqtt');
 var validator = require('validator');
+var multer = require('multer');
+var checker = require('./app/func/checker.js');
 var imageinfo = require('./app/func/imageInfo.js');
 var config = require('./config.js');
 var WechatAPI = require('wechat-api');
@@ -299,12 +301,11 @@ router.route('/user/wc/updatemenu')
                 });
             }
         });
-    }    ;
+    };
 });
 
 //账号管理api
 router.route('/user')
-    //Content-Type 必须为application/json
 	.post(takeup, isAdmin, function (req, res) {
     var user = new UserModel(req.body);
     if (user.userId !== "admin") {
@@ -325,7 +326,6 @@ router.route('/user')
     }
 })
 
-    	// 提取自己的资料
 	.get(takeup, isLogin, function (req, res) {
     var obj = req.userinfo.toObject();
     delete obj._id;
@@ -712,6 +712,48 @@ router.route('/hub/:dvid/node/:ssid/photos')
             imgdp.hubid = req.params.dvid;
             imgdp.nodeid = req.params.ssid;
             imgdp.img = req.body;
+            imgdp.value = { type: info.mimeType, size: req.body.length, width: info.width, height: info.height };
+            imgdp.save(function (err, imgs) {
+                if (err) {
+                    if (!config.production) {
+                        res.send(err);
+                    } else {
+                        res.status(404);
+                        res.end();
+                    }
+                } else {
+                    res.end();
+                }
+            });
+        } else {
+            res.status(415);
+            res.end();
+        }
+    } else {
+        res.status(404);
+        res.end();
+    }
+});
+
+var storage = multer.memoryStorage();
+var filter = function fileFilter(req, file, cb) {
+    var ext = path.extname(file.originalname);
+    if (!checker.contains.call(config.formfileTyps, ext)) {
+        cb(new Error('invalid file type'));
+    } else {
+        cb(null, true);
+    }
+}
+var upload = multer({ storage: storage, fileFilter: filter });
+router.route('/hub/:dvid/node/:ssid/photos/form')
+  .post(isAuthenticated, isDvsInUkey, isSssInDvs, getSensorType, upload.single('fn'), function (req, res) {
+    if (req.type === "photo") {
+        info = imageinfo(req.file.buffer);
+        if (info.mimeType !== undefined) {
+            var imgdp = new ImgdpModel();
+            imgdp.hubid = req.params.dvid;
+            imgdp.nodeid = req.params.ssid;
+            imgdp.img = req.file.buffer;
             imgdp.value = { type: info.mimeType, size: req.body.length, width: info.width, height: info.height };
             imgdp.save(function (err, imgs) {
                 if (err) {

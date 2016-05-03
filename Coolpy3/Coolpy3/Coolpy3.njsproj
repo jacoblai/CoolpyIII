@@ -19,7 +19,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <NodejsPort>1337</NodejsPort>
     <StartWebBrowser>true</StartWebBrowser>
   </PropertyGroup>
@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="app\func\checker.js" />
     <Compile Include="app\func\imageInfo.js" />
     <Compile Include="app\models\admin.js" />
     <Compile Include="app\models\device.js" />
@@ -46,6 +47,8 @@
     <Compile Include="config.js" />
     <Compile Include="mqttsv.js" />
     <Compile Include="public\app.js" />
+    <Compile Include="public\assets\js\amazeui.ie8polyfill.js" />
+    <Compile Include="public\assets\js\amazeui.ie8polyfill.min.js" />
     <Compile Include="public\assets\js\amazeui.js" />
     <Compile Include="public\assets\js\amazeui.min.js" />
     <Compile Include="public\assets\js\amazeui.widgets.helper.js" />
@@ -220,13 +223,11 @@
     <Folder Include="public\assets\js\timeline\" />
     <Folder Include="public\assets\js\timeline\css\" />
     <Folder Include="public\assets\js\timeline\js\" />
-    <Folder Include="public\Scripts\" />
     <Folder Include="public\assets\js\echarts\chart\" />
     <Folder Include="public\web\" />
     <Folder Include="ssl\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />
-    <Folder Include="public\javascripts\" />
     <Folder Include="public\stylesheets\" />
     <Folder Include="routes\" />
     <Folder Include="views\" />

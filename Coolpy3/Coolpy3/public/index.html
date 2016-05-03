@@ -16,12 +16,6 @@
     <link href="assets/js/switch/css/style.css" rel="stylesheet" />
     <link href="assets/js/jquery-ui-1.11.2.custom/jquery-ui.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/range.css">
-    <!--[if lte IE 9]>
-    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器。 请 <a
-      href="http://browsehappy.com/" target="_blank">升级浏览器</a>
-      以获得更好的体验！</p>
-    <![endif]-->
-
 </head>
 <body id="mainModel" class="am-hide">
     <!-- Header -->
@@ -173,7 +167,14 @@
 
     <div id="dialog-confirm" tabindex="-1"></div>
 
+    <!--[if (gte IE 9)|!(IE)]><!-->
     <script src="assets/js/jquery.min.js"></script>
+    <!--<![endif]-->
+    <!--[if lte IE 8 ]>
+    <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+    <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+    <![endif]-->
     <script src="assets/js/amazeui.min.js"></script>
     <script src="assets/js/knockout-3.2.0.js"></script>
     <script src="assets/js/knockout.validation.js"></script>
